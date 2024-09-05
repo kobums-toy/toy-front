@@ -42,30 +42,30 @@ const LoginForm: React.FC = () => {
   // onSubmit 이벤트 타입을 명시합니다.
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    login({ username, password });
+    login({ username: username, password: password });
   };
 
   return (
     <form css={formStyle} onSubmit={handleSubmit}>
       <>
         <input
-            css={inputStyle}
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
+          css={inputStyle}
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
         />
         <input
-            css={inputStyle}
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+          css={inputStyle}
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
         />
         <button css={buttonStyle} type="submit" disabled={isLoading}>
-            {isLoading ? 'Logging in...' : 'Login'}
+          {isLoading ? 'Logging in...' : 'Login'}
         </button>
         {error && <p style={{ color: 'red' }}>Login failed. Please try again.</p>}
       </>

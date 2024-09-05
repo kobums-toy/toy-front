@@ -1,21 +1,18 @@
 import { useMutation } from 'react-query';
 import { useSetRecoilState } from 'recoil';
+import request from '../global/request';
 import { authState } from '../recoil/atoms';
 
-const login = async (credentials: { username: string; password: string }) => {
-  const response = await fetch('/api/login', {
+const login = async (item: any) => {
+  const res = await request('/api/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(credentials),
+    data: item,
   });
 
-  if (!response.ok) {
-    throw new Error('Login failed');
-  }
-
-  return response.json();
+  return res
 };
 
 export const useAuth = () => {
