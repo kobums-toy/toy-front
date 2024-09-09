@@ -5,6 +5,7 @@ import LoginPage from '../pages/LoginPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import { authTokenState } from '../recoil/atoms'; // Recoil의 토큰 상태
 import { setAuthHeader, setupResponseInterceptor } from '../global/request'; // Axios 설정 파일
+import { HomePage } from '../pages/HomePage';
 
 const RouterComponent: React.FC = () => {
   const [authToken, setAuthToken] = useRecoilState(authTokenState); // Recoil에서 토큰 상태 관리
@@ -17,14 +18,16 @@ const RouterComponent: React.FC = () => {
     // 401 에러 시 로그아웃 및 리다이렉트 처리
     setupResponseInterceptor(() => {
       setAuthToken(null); // Recoil 상태 초기화
-      navigate('/login'); // 로그인 페이지로 이동
+      // navigate('/login'); // 로그인 페이지로 이동
+      navigate('/')
     });
   }, [authToken, navigate, setAuthToken]);
 
   return (
     <Routes>
       {/* 기본 경로에 대해 로그인 페이지로 리다이렉트 */}
-      <Route path="/" element={<Navigate to="/login" />} />
+      {/* <Route path="/" element={<Navigate to="/login" />} /> */}
+      <Route path="/" element={<HomePage />} />
       {/* 로그인 페이지 경로 */}
       <Route path="/login" element={<LoginPage />} />
       {/* 대시보드 경로 (로그인 후 접근) */}

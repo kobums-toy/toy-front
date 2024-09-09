@@ -12,13 +12,10 @@ const containerStyle = css`
   padding-top: 33vh; /* 1/3 지점에 위치 */
 `;
 
-const LoginPage: React.FC = () => {
+export const HomePage: React.FC = () => {
   return (
     <div css={containerStyle}>
-      <LoginForm />
       <ThemeToggleButton /> {/* 테마 전환 버튼 추가 */}
     </div>
   );
 };
-
-export default LoginPage;

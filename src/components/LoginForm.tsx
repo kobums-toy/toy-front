@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { primaryColor, primaryColorHover } from '../styles/colors';
 
 const formStyle = css`
   display: flex;
@@ -23,14 +24,14 @@ const inputStyle = css`
 
 const buttonStyle = css`
   padding: 10px;
-  background-color: #007bff;
+  background-color: ${primaryColor};
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: ${primaryColorHover};
   }
 `;
 

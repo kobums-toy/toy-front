@@ -9,6 +9,7 @@ export const lightTheme: LightTheme = {
     buttonBorder: '#000',
     buttonBg: 'rgba(0, 0, 0, 0)',
     buttonBgHover: 'rgba(0, 0, 0, 1)',
+    borderColor: '#a2c3fc',
   },
 };
 
@@ -21,5 +22,9 @@ export const dartkTheme: DarkTheme = {
     buttonBorder: '#fff',
     buttonBg: 'rgba(255, 255, 255, 0)',
     buttonBgHover: 'rgba(255, 255, 255, 1)',
+    borderColor: '#4a90e2',
   },
 };
+
+export const primaryColor = '#007bff'
+export const primaryColorHover = '#0056b3'

@@ -10,6 +10,7 @@ declare module '@emotion/react' {
       buttonBorder: string;
       buttonBg: string;
       buttonBgHover: string;
+      borderColor: string;
     };
   }
 
@@ -22,6 +23,7 @@ declare module '@emotion/react' {
       buttonBorder: string;
       buttonBg: string;
       buttonBgHover: string;
+      borderColor: string;
     };
   }
 }
