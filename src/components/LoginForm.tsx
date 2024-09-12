@@ -7,6 +7,7 @@ import { primaryColor, primaryColorHover } from '../styles/colors';
 const formStyle = css`
   display: flex;
   flex-direction: column;
+  min-width: 300px;
   max-width: 300px;
   margin: 0 auto;
   padding: 20px;

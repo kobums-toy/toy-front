@@ -66,21 +66,21 @@ export const ThemeToggleButton: React.FC = () => {
         onClick={() => setThemeMode('light')}
       >
         {themeMode === 'light' ? <FaCheck /> : <FaSun />}
-        밝게
+        {/* 밝게 */}
       </button>
       <button
         css={buttonStyle(themeMode === 'dark', isDarkMode)}
         onClick={() => setThemeMode('dark')}
       >
         {themeMode === 'dark' ? <FaCheck /> : <FaMoon />}
-        어둡게
+        {/* 어둡게 */}
       </button>
       <button
         css={buttonStyle(themeMode === 'auto', isDarkMode)}
         onClick={() => setThemeMode('auto')}
       >
         {themeMode === 'auto' ? <FaCheck /> : <MdComputer />}
-        기기
+        {/* 기기 */}
       </button>
     </div>
   );

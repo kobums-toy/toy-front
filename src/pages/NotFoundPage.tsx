@@ -60,7 +60,6 @@ const NotFoundPage: React.FC = () => {
         Now, nothing remains.
       </p>
       <Link to="/" css={linkStyle}>Go Back Home</Link>
-      <ThemeToggleButton /> {/* 테마 전환 버튼 추가 */}
     </div>
   );
 };
