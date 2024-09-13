@@ -1,14 +1,13 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css, keyframes } from '@emotion/react';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { isDarkModeState } from '../recoil/atoms';
 import { dartkTheme, lightTheme, primaryColor, primaryColorHover } from '../styles/colors';
 import { ThemeToggleButton } from '../components/ThemeToggleButton';
-import { FaBars } from 'react-icons/fa'; // 햄버거 메뉴 아이콘 추가
+import { FaBars, FaTimes } from 'react-icons/fa'; // 햄버거 메뉴 및 X 아이콘 추가
+import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위해 useNavigate 사용
 
-// 스타일 정의
 const headerWrapperStyle = (isDarkMode: boolean) => css`
   display: flex;
   justify-content: center;
@@ -33,57 +32,76 @@ const headerContentStyle = css`
 const logoStyle = (isDarkMode: boolean) => css`
   font-size: 1.5rem;
   font-weight: bold;
+  background: none;
+  border: none;
+  cursor: pointer;
   color: ${isDarkMode ? dartkTheme.mode.text : lightTheme.mode.text};
   text-decoration: none;
 `;
 
-const navStyle = (isOpen: boolean) => css`
+const navStyle = (isMenuOpen: boolean, isDarkMode: boolean) => css`
   display: flex;
   gap: 20px;
   list-style: none;
+  align-items: center; /* 수직 중앙 정렬 */
 
   @media (max-width: 768px) {
-    display: ${isOpen ? 'block' : 'none'};
-    position: absolute;
+    display: ${isMenuOpen ? 'flex' : 'none'};
+    flex-direction: column;
+    position: fixed;
     top: 60px;
     left: 0;
     width: 100%;
-    background-color: ${isOpen ? (isOpen ? '#fff' : '#000') : 'transparent'};
+    height: calc(100vh - 60px); /* 헤더 높이만큼 제외한 화면 전체 덮음 */
+    background-color: ${isDarkMode ? dartkTheme.mode.background : lightTheme.mode.background};
+    justify-content: flex-start;
+    align-items: flex-start;
+    z-index: 999;
   }
 `;
 
 const navItemStyle = (isDarkMode: boolean) => css`
   font-size: 1rem;
   color: ${isDarkMode ? dartkTheme.mode.text : lightTheme.mode.text};
-  text-decoration: none;
-  font-weight: 400;
+  background: none;
+  border: none;
   padding: 10px 15px;
-  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 10px; /* 모서리 둥글게 */
   transition: background-color 0.3s ease, font-weight 0.3s ease;
   &:hover {
     background-color: ${isDarkMode ? `#090909` : `#f5f5f5`};
-    font-weight: 600;
   }
 `;
 
-const loginButtonStyle = css`
+const buttonStyle = css`
   background-color: ${primaryColor};
   color: white;
   padding: 10px 20px;
-  border-radius: 5px;
-  text-decoration: none;
+  border-radius: 10px;
+  border: none;
   font-size: 1rem;
+  cursor: pointer;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  flex-shrink: 0; /* 버튼이 작아지지 않도록 설정 */
+  min-width: 80px; /* 최소 너비 설정 */
   &:hover {
     background-color: ${primaryColorHover};
-    font-weight: 600;
   }
 
-  // @media (max-width: 768px) {
-  //   background-color: transparent;
-  //   color: ${primaryColor};
-  //   padding: 10px 15px;
-  //   font-size: 1rem;
-  // }
+  @media (max-width: 768px) {
+    // background-color: transparent;
+    // color: ${primaryColor};
+    // padding: 10px 15px;
+    // font-size: 1.5rem;
+  }
+`;
+
+const headerTitle = css`
+  display: flex;
+  gap: 15px;
+  align-items: center;
 `;
 
 const hamburgerStyle = css`
@@ -92,55 +110,66 @@ const hamburgerStyle = css`
   cursor: pointer;
 
   @media (max-width: 768px) {
-    display: block;
+    display: flex;
+    align-items: center;
   }
 `;
 
 const Header: React.FC = () => {
   const [isDarkMode] = useRecoilState(isDarkModeState);
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate 훅 사용
+
+  const handleNavigation = (path: string) => {
+    navigate(path); // 버튼 클릭 시 페이지 이동
+  };
 
   return (
     <div css={headerWrapperStyle(isDarkMode)}>
       <header css={headerContentStyle}>
-        {/* 햄버거 메뉴 아이콘 (작은 화면에서 보임) */}
-        <FaBars css={hamburgerStyle} color={isDarkMode ? lightTheme.mode.background : dartkTheme.mode.background} onClick={() => setMenuOpen(!isMenuOpen)} />
+        {/* 햄버거 메뉴 아이콘과 X 아이콘 */}
+        <div css={headerTitle}>
+          <div css={hamburgerStyle} onClick={() => setMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <FaTimes /> : <FaBars />}
+          </div>
 
-        <Link to="/" css={logoStyle(isDarkMode)}>
-          Gowoobro
-        </Link>
-
-        {/* 네비게이션 메뉴 (큰 화면에서 보임) */}
+          <button css={logoStyle(isDarkMode)} onClick={() => handleNavigation('/')}>
+            Gowoobro
+          </button>
+        </div>
+        {/* 네비게이션 메뉴 */}
         <nav>
-          <ul css={navStyle(isMenuOpen)}>
+          <ul css={navStyle(isMenuOpen, isDarkMode)}>
             <li>
-              <Link to="/item1" css={navItemStyle(isDarkMode)}>
+              <button css={navItemStyle(isDarkMode)} onClick={() => handleNavigation('/item1')}>
                 item1
-              </Link>
+              </button>
             </li>
             <li>
-              <Link to="/item2" css={navItemStyle(isDarkMode)}>
+              <button css={navItemStyle(isDarkMode)} onClick={() => handleNavigation('/item2')}>
                 item2
-              </Link>
+              </button>
             </li>
             <li>
-              <Link to="/item3" css={navItemStyle(isDarkMode)}>
+              <button css={navItemStyle(isDarkMode)} onClick={() => handleNavigation('/item3')}>
                 item3
-              </Link>
+              </button>
             </li>
             <li>
-              <Link to="/item4" css={navItemStyle(isDarkMode)}>
+              <button css={navItemStyle(isDarkMode)} onClick={() => handleNavigation('/item4')}>
                 item4
-              </Link>
+              </button>
+            </li>
+            {/* 테마 토글 버튼을 네비게이션의 마지막 항목으로 배치 */}
+            <li>
+              <ThemeToggleButton />
             </li>
           </ul>
         </nav>
 
-        {/* 테마 변경 버튼 및 로그인 버튼 */}
-        <ThemeToggleButton />
-        <Link to="/login" css={loginButtonStyle}>
+        <button css={buttonStyle} onClick={() => handleNavigation('/login')}>
           로그인
-        </Link>
+        </button>
       </header>
     </div>
   );

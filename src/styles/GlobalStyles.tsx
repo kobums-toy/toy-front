@@ -1,5 +1,5 @@
 import React from 'react';
-import { css, Global, LightTheme, DarkTheme } from '@emotion/react';
+import { css, Global } from '@emotion/react';
 
 const globalStyle = (theme: any) => css`
     html, body, div, span, applet, object, iframe,
