@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { ThemeToggleButton } from '../components/ThemeToggleButton';
+import ThemeToggleButton from '../components/ThemeToggleButton';
 import { isDarkModeState } from '../recoil/atoms';
 import { dartkTheme, lightTheme } from '../styles/colors';
 

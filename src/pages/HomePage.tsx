@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React from 'react';
+import FloatingActionButton from '../components/FloatingActionButton';
 
 const containerStyle = css`
   flex-direction: column;
@@ -13,7 +14,7 @@ export const HomePage: React.FC = () => {
   return (
     <>
       <div css={containerStyle}>
-        {/* <ThemeToggleButton /> 테마 전환 버튼 추가 */}
+        <FloatingActionButton />
       </div>
     </>
   );

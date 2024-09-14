@@ -43,7 +43,7 @@ const buttonStyle = (isSelected: boolean, isDarkMode: boolean) => css`
   }
 `;
 
-export const ThemeToggleButton: React.FC = () => {
+const ThemeToggleButton: React.FC = () => {
   const [themeMode, setThemeMode] = useRecoilState(themeModeState);
   const [isDarkMode, setIsDarkMode] = useRecoilState(isDarkModeState);
 
@@ -85,3 +85,5 @@ export const ThemeToggleButton: React.FC = () => {
     </div>
   );
 };
+
+export default ThemeToggleButton

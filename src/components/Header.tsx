@@ -1,12 +1,13 @@
 /** @jsxImportSource @emotion/react */
-import { css, keyframes } from '@emotion/react';
+import { css } from '@emotion/react';
 import React, { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { isDarkModeState } from '../recoil/atoms';
-import { dartkTheme, lightTheme, primaryColor, primaryColorHover } from '../styles/colors';
-import { ThemeToggleButton } from '../components/ThemeToggleButton';
-import { FaBars, FaTimes } from 'react-icons/fa'; // 햄버거 메뉴 및 X 아이콘 추가
-import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위해 useNavigate 사용
+import { dartkTheme, lightTheme } from '../styles/colors';
+import { FaBars, FaTimes } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import DesktopNav from './DesktopNav';
+import MobileOverlayNav from './MobileOverlayNav';
 
 const headerWrapperStyle = (isDarkMode: boolean) => css`
   display: flex;
@@ -17,7 +18,7 @@ const headerWrapperStyle = (isDarkMode: boolean) => css`
   left: 0;
   background-color: ${isDarkMode ? dartkTheme.mode.background : lightTheme.mode.background};
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  z-index: 1100;
 `;
 
 const headerContentStyle = css`
@@ -39,138 +40,62 @@ const logoStyle = (isDarkMode: boolean) => css`
   text-decoration: none;
 `;
 
-const navStyle = (isMenuOpen: boolean, isDarkMode: boolean) => css`
-  display: flex;
-  gap: 20px;
-  list-style: none;
-  align-items: center; /* 수직 중앙 정렬 */
+const hamburgerStyle = css`
+  display: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  align-items: center;
 
   @media (max-width: 768px) {
-    display: ${isMenuOpen ? 'flex' : 'none'};
-    flex-direction: column;
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    height: calc(100vh - 60px); /* 헤더 높이만큼 제외한 화면 전체 덮음 */
-    background-color: ${isDarkMode ? dartkTheme.mode.background : lightTheme.mode.background};
-    justify-content: flex-start;
-    align-items: flex-start;
-    z-index: 999;
-  }
-`;
-
-const navItemStyle = (isDarkMode: boolean) => css`
-  font-size: 1rem;
-  color: ${isDarkMode ? dartkTheme.mode.text : lightTheme.mode.text};
-  background: none;
-  border: none;
-  padding: 10px 15px;
-  text-align: left;
-  cursor: pointer;
-  border-radius: 10px; /* 모서리 둥글게 */
-  transition: background-color 0.3s ease, font-weight 0.3s ease;
-  &:hover {
-    background-color: ${isDarkMode ? `#090909` : `#f5f5f5`};
+    display: flex; /* 모바일 화면에서만 햄버거 메뉴 표시 */
   }
 `;
 
 const buttonStyle = css`
-  background-color: ${primaryColor};
+  background-color: #1a73e8;
   color: white;
   padding: 10px 20px;
   border-radius: 10px;
   border: none;
   font-size: 1rem;
   cursor: pointer;
-  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
-  flex-shrink: 0; /* 버튼이 작아지지 않도록 설정 */
-  min-width: 80px; /* 최소 너비 설정 */
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 80px;
   &:hover {
-    background-color: ${primaryColorHover};
-  }
-
-  @media (max-width: 768px) {
-    // background-color: transparent;
-    // color: ${primaryColor};
-    // padding: 10px 15px;
-    // font-size: 1.5rem;
+    background-color: #1766d1;
   }
 `;
 
-const headerTitle = css`
-  display: flex;
-  gap: 15px;
-  align-items: center;
-`;
-
-const hamburgerStyle = css`
-  display: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-
-  @media (max-width: 768px) {
-    display: flex;
-    align-items: center;
-  }
-`;
 
 const Header: React.FC = () => {
   const [isDarkMode] = useRecoilState(isDarkModeState);
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate 훅 사용
+  const navigate = useNavigate();
 
   const handleNavigation = (path: string) => {
-    navigate(path); // 버튼 클릭 시 페이지 이동
+    setMenuOpen(false); // 메뉴 닫기
+    navigate(path); // 페이지 이동
   };
 
   return (
-    <div css={headerWrapperStyle(isDarkMode)}>
-      <header css={headerContentStyle}>
-        {/* 햄버거 메뉴 아이콘과 X 아이콘 */}
-        <div css={headerTitle}>
-          <div css={hamburgerStyle} onClick={() => setMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <FaTimes /> : <FaBars />}
-          </div>
-
+    <div>
+      <div css={headerWrapperStyle(isDarkMode)}>
+        <header css={headerContentStyle}>
           <button css={logoStyle(isDarkMode)} onClick={() => handleNavigation('/')}>
             Gowoobro
           </button>
-        </div>
-        {/* 네비게이션 메뉴 */}
-        <nav>
-          <ul css={navStyle(isMenuOpen, isDarkMode)}>
-            <li>
-              <button css={navItemStyle(isDarkMode)} onClick={() => handleNavigation('/item1')}>
-                item1
-              </button>
-            </li>
-            <li>
-              <button css={navItemStyle(isDarkMode)} onClick={() => handleNavigation('/item2')}>
-                item2
-              </button>
-            </li>
-            <li>
-              <button css={navItemStyle(isDarkMode)} onClick={() => handleNavigation('/item3')}>
-                item3
-              </button>
-            </li>
-            <li>
-              <button css={navItemStyle(isDarkMode)} onClick={() => handleNavigation('/item4')}>
-                item4
-              </button>
-            </li>
-            {/* 테마 토글 버튼을 네비게이션의 마지막 항목으로 배치 */}
-            <li>
-              <ThemeToggleButton />
-            </li>
-          </ul>
-        </nav>
+          <DesktopNav isDarkMode={isDarkMode} />
+          <button css={buttonStyle} onClick={() => handleNavigation('/login')}>
+            로그인
+          </button>
+          <div css={hamburgerStyle} onClick={() => setMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <FaTimes /> : <FaBars />}
+          </div>
+        </header>
+      </div>
 
-        <button css={buttonStyle} onClick={() => handleNavigation('/login')}>
-          로그인
-        </button>
-      </header>
+      <MobileOverlayNav isDarkMode={isDarkMode} isMenuOpen={isMenuOpen} />
     </div>
   );
 };
