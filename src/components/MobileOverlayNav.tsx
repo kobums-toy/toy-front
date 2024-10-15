@@ -1,17 +1,18 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css, useTheme } from '@emotion/react';
 import React from 'react';
 import { FaChevronRight } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { dartkTheme } from '../styles/colors';
 import ThemeToggleButton from './ThemeToggleButton';
 
-const overlayStyle = (isMenuOpen: boolean, isDarkMode: boolean) => css`
+const overlayStyle = (isMenuOpen: boolean, theme: any) => css`
   position: fixed;
   top: 60px;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: ${isDarkMode ? '#1a1a1a' : '#fff'};
+  background-color: ${theme.mode == dartkTheme.mode ? '#1a1a1a' : '#fff'};
   transform: ${isMenuOpen ? 'translateY(0)' : 'translateY(-100vh)'};
   transition: transform 0.8s ease;
   display: flex;
@@ -26,12 +27,12 @@ const overlayStyle = (isMenuOpen: boolean, isDarkMode: boolean) => css`
   }
 `;
 
-const menuItemStyle = (isDarkMode: boolean) => css`
+const menuItemStyle = (theme: any) => css`
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 1.5rem;
-  color: ${isDarkMode ? '#fff' : '#000'};
+  color: ${theme.mode == dartkTheme.mode ? '#fff' : '#000'};
   width: 100vw;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -53,11 +54,12 @@ const arrowIconStyle = css`
 `;
 
 interface MobileOverlayNavProps {
-  isDarkMode: boolean;
   isMenuOpen: boolean;
+  onThemeChange: (mode: 'light' | 'dark' | 'auto') => void; // 테마 변경 함수
 }
 
-const MobileOverlayNav: React.FC<MobileOverlayNavProps> = ({ isDarkMode, isMenuOpen }) => {
+const MobileOverlayNav: React.FC<MobileOverlayNavProps> = ({ isMenuOpen, onThemeChange }) => {
+  const theme = useTheme()
   const navigate = useNavigate();
 
   const handleNavigation = (path: string) => {
@@ -65,32 +67,32 @@ const MobileOverlayNav: React.FC<MobileOverlayNavProps> = ({ isDarkMode, isMenuO
   };
 
   return (
-    <div css={overlayStyle(isMenuOpen, isDarkMode)}>
-      <div css={menuItemStyle(isDarkMode)} onClick={() => handleNavigation('/item1')}>
+    <div css={overlayStyle(isMenuOpen, theme)}>
+      <div css={menuItemStyle(theme)} onClick={() => handleNavigation('/item1')}>
         item1
         <span css={arrowIconStyle}>
           <FaChevronRight />
         </span>
       </div>
-      <div css={menuItemStyle(isDarkMode)} onClick={() => handleNavigation('/item2')}>
+      <div css={menuItemStyle(theme)} onClick={() => handleNavigation('/item2')}>
         item2
         <span css={arrowIconStyle}>
           <FaChevronRight />
         </span>
       </div>
-      <div css={menuItemStyle(isDarkMode)} onClick={() => handleNavigation('/item3')}>
+      <div css={menuItemStyle(theme)} onClick={() => handleNavigation('/item3')}>
         item3
         <span css={arrowIconStyle}>
           <FaChevronRight />
         </span>
       </div>
-      <div css={menuItemStyle(isDarkMode)} onClick={() => handleNavigation('/item4')}>
+      <div css={menuItemStyle(theme)} onClick={() => handleNavigation('/item4')}>
         item4
         <span css={arrowIconStyle}>
           <FaChevronRight />
         </span>
       </div>
-      <ThemeToggleButton />
+      <ThemeToggleButton onThemeChange={onThemeChange} />
     </div>
   );
 };

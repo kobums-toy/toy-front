@@ -1,33 +1,30 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
-import React, { useEffect } from 'react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { isDarkModeState, themeModeState } from '../recoil/atoms';
+import { css, useTheme } from '@emotion/react';
+import React from 'react';
 
 // 아이콘은 예시로 설정
 import { FaSun, FaMoon, FaCheck } from 'react-icons/fa';
 import { MdComputer } from "react-icons/md";
 import { dartkTheme, lightTheme } from '../styles/colors';
-import useMediaQuery from '../hooks/useMediaQeury';
 
-const buttonGroupStyle = (isDarkMode: boolean) => css`
+const buttonGroupStyle = (theme: any) => css`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: ${isDarkMode ? dartkTheme.mode.background : lightTheme.mode.background};
+  background-color: ${theme.mode.background};
   padding: 5px;
   border-radius: 40px;
-  border: 1px solid ${isDarkMode ? dartkTheme.mode.borderColor : lightTheme.mode.borderColor};
+  border: 1px solid ${theme.mode.borderColor};
   width: fit-content;
 `;
 
-const buttonStyle = (isSelected: boolean, isDarkMode: boolean) => css`
+const buttonStyle = (isSelected: boolean, theme: any) => css`
   display: flex;
   align-items: center;
   gap: 5px;
   padding: 10px 20px;
-  background-color: ${isSelected ? (isDarkMode ? '#9bbcff' : '#2563eb') : 'transparent'};
-  color: ${isDarkMode ? (isSelected ? '#000000' : '#cccccc') : (isSelected ? '#ffffff' : '#5f6368')};
+  background-color: ${isSelected ? (theme.mode === dartkTheme.mode ? '#9bbcff' : '#2563eb') : 'transparent'};
+  color: ${theme.mode === dartkTheme.mode ? (isSelected ? '#000000' : '#cccccc') : (isSelected ? '#ffffff' : '#5f6368')};
   border-radius: 30px;
   cursor: pointer;
   border: none;
@@ -35,7 +32,7 @@ const buttonStyle = (isSelected: boolean, isDarkMode: boolean) => css`
   transition: background-color 0.3s ease, color 0.3s ease;
 
   &:hover {
-    color: ${isDarkMode ? (isSelected ? '#000000' : '#ffffff') : (isSelected ? '#ffffff' : '#000000')};
+    color: ${theme.mode === dartkTheme.mode ? (isSelected ? '#000000' : '#ffffff') : (isSelected ? '#ffffff' : '#000000')};
   }
 
   svg {
@@ -43,44 +40,42 @@ const buttonStyle = (isSelected: boolean, isDarkMode: boolean) => css`
   }
 `;
 
-const ThemeToggleButton: React.FC = () => {
-  const [themeMode, setThemeMode] = useRecoilState(themeModeState);
-  const [isDarkMode, setIsDarkMode] = useRecoilState(isDarkModeState);
+interface ThemeToggleButtonProps {
+  onThemeChange: (mode: 'light' | 'dark' | 'auto') => void; // 테마 변경 콜백 함수
+}
 
-  const setIsThemeMode = useSetRecoilState(themeModeState);
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)'); // 기기 설정 감지
+const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ onThemeChange }) => {
+  const theme = useTheme()
+  const [selectedMode, setSelectedMode] = React.useState<'light' | 'dark' | 'auto'>('auto');
 
-  useEffect(() => {
-    setIsThemeMode(themeMode)
-    if (themeMode === 'auto') {
-      setIsDarkMode(prefersDarkMode);
-    } else {
-      setIsDarkMode(themeMode == 'dark' ? true : false);
-    }
-  }, [themeMode, prefersDarkMode, setIsThemeMode]);
+  const handleButtonClick = (mode: 'light' | 'dark' | 'auto') => {
+    setSelectedMode(mode);
+    onThemeChange(mode); // 부모 컴포넌트(App)에서 테마 모드를 변경하도록 함
+    console.log("aaa")
+  };
 
   return (
-    <div css={buttonGroupStyle(isDarkMode)}>
+    <div css={buttonGroupStyle(theme)}>
       <button
-        css={buttonStyle(themeMode === 'light', isDarkMode)}
-        onClick={() => setThemeMode('light')}
+        css={buttonStyle(selectedMode === 'light', theme)}
+        onClick={() => handleButtonClick('light')}
       >
-        {themeMode === 'light' ? <FaCheck /> : <FaSun />}
-        {/* 밝게 */}
+        {selectedMode === 'light' ? <FaCheck /> : <FaSun />}
+        밝게
       </button>
       <button
-        css={buttonStyle(themeMode === 'dark', isDarkMode)}
-        onClick={() => setThemeMode('dark')}
+        css={buttonStyle(selectedMode === 'dark', theme)}
+        onClick={() => handleButtonClick('dark')}
       >
-        {themeMode === 'dark' ? <FaCheck /> : <FaMoon />}
-        {/* 어둡게 */}
+        {selectedMode === 'dark' ? <FaCheck /> : <FaMoon />}
+        어둡게
       </button>
       <button
-        css={buttonStyle(themeMode === 'auto', isDarkMode)}
-        onClick={() => setThemeMode('auto')}
+        css={buttonStyle(selectedMode === 'auto', theme)}
+        onClick={() => handleButtonClick('auto')}
       >
-        {themeMode === 'auto' ? <FaCheck /> : <MdComputer />}
-        {/* 기기 */}
+        {selectedMode === 'auto' ? <FaCheck /> : <MdComputer />}
+        기기 설정
       </button>
     </div>
   );

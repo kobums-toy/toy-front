@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React from 'react';
+import CardList from '../components/CardList';
 import FloatingActionButton from '../components/FloatingActionButton';
 
 const containerStyle = css`
@@ -14,6 +15,7 @@ export const HomePage: React.FC = () => {
   return (
     <>
       <div css={containerStyle}>
+        <CardList />
         <FloatingActionButton />
       </div>
     </>

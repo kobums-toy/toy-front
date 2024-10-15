@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css, useTheme } from '@emotion/react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { dartkTheme } from '../styles/colors';
 import ThemeToggleButton from './ThemeToggleButton';
 
 const navStyle = css`
@@ -15,9 +16,9 @@ const navStyle = css`
   }
 `;
 
-const navItemStyle = (isDarkMode: boolean) => css`
+const navItemStyle = (theme: any) => css`
   font-size: 1rem;
-  color: ${isDarkMode ? '#fff' : '#000'};
+  color: ${theme.mode.text};
   background: none;
   border: none;
   padding: 10px 15px;
@@ -25,15 +26,16 @@ const navItemStyle = (isDarkMode: boolean) => css`
   border-radius: 10px;
   transition: background-color 0.3s ease;
   &:hover {
-    background-color: ${isDarkMode ? '#090909' : '#f5f5f5'};
+    background-color: ${theme.mode == dartkTheme.mode ? '#090909' : '#f5f5f5'};
   }
 `;
 
 interface DesktopNavProps {
-  isDarkMode: boolean;
+  onThemeChange: (mode: 'light' | 'dark' | 'auto') => void; // 테마 변경 함수
 }
 
-const DesktopNav: React.FC<DesktopNavProps> = ({ isDarkMode }) => {
+const DesktopNav: React.FC<DesktopNavProps> = ({ onThemeChange }) => {
+  const theme = useTheme()
   const navigate = useNavigate();
 
   const handleNavigation = (path: string) => {
@@ -42,19 +44,19 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ isDarkMode }) => {
 
   return (
     <nav css={navStyle}>
-      <button css={navItemStyle(isDarkMode)} onClick={() => handleNavigation('/item1')}>
+      <button css={navItemStyle(theme)} onClick={() => handleNavigation('/item1')}>
         item1
       </button>
-      <button css={navItemStyle(isDarkMode)} onClick={() => handleNavigation('/item2')}>
+      <button css={navItemStyle(theme)} onClick={() => handleNavigation('/item2')}>
         item2
       </button>
-      <button css={navItemStyle(isDarkMode)} onClick={() => handleNavigation('/item3')}>
+      <button css={navItemStyle(theme)} onClick={() => handleNavigation('/item3')}>
         item3
       </button>
-      <button css={navItemStyle(isDarkMode)} onClick={() => handleNavigation('/item4')}>
+      <button css={navItemStyle(theme)} onClick={() => handleNavigation('/item4')}>
         item4
       </button>
-      <ThemeToggleButton />
+      <ThemeToggleButton onThemeChange={onThemeChange} />
     </nav>
   );
 };

@@ -1,22 +1,20 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css, useTheme } from '@emotion/react';
 import React, { useState } from 'react';
 import { useRecoilState } from 'recoil';
-import { isDarkModeState } from '../recoil/atoms';
-import { dartkTheme, lightTheme } from '../styles/colors';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import DesktopNav from './DesktopNav';
 import MobileOverlayNav from './MobileOverlayNav';
 
-const headerWrapperStyle = (isDarkMode: boolean) => css`
+const headerWrapperStyle = (theme: any) => css`
   display: flex;
   justify-content: center;
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
-  background-color: ${isDarkMode ? dartkTheme.mode.background : lightTheme.mode.background};
+  background-color: ${theme.mode.background};
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   z-index: 1100;
 `;
@@ -30,13 +28,13 @@ const headerContentStyle = css`
   padding: 10px 20px;
 `;
 
-const logoStyle = (isDarkMode: boolean) => css`
+const logoStyle = (theme: any) => css`
   font-size: 1.5rem;
   font-weight: bold;
   background: none;
   border: none;
   cursor: pointer;
-  color: ${isDarkMode ? dartkTheme.mode.text : lightTheme.mode.text};
+  color: ${theme.mode.text};
   text-decoration: none;
 `;
 
@@ -67,9 +65,12 @@ const buttonStyle = css`
   }
 `;
 
+interface Header {
+  onChangeTheme: (mode: 'light' | 'dark' | 'auto') => void
+}
 
-const Header: React.FC = () => {
-  const [isDarkMode] = useRecoilState(isDarkModeState);
+const Header: React.FC<Header> = ({ onChangeTheme }) => {
+  const theme = useTheme()
   const [isMenuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -80,12 +81,12 @@ const Header: React.FC = () => {
 
   return (
     <div>
-      <div css={headerWrapperStyle(isDarkMode)}>
+      <div css={headerWrapperStyle(theme)}>
         <header css={headerContentStyle}>
-          <button css={logoStyle(isDarkMode)} onClick={() => handleNavigation('/')}>
+          <button css={logoStyle(theme)} onClick={() => handleNavigation('/')}>
             Gowoobro
           </button>
-          <DesktopNav isDarkMode={isDarkMode} />
+          <DesktopNav onThemeChange={onChangeTheme} />
           <button css={buttonStyle} onClick={() => handleNavigation('/login')}>
             로그인
           </button>
@@ -95,7 +96,7 @@ const Header: React.FC = () => {
         </header>
       </div>
 
-      <MobileOverlayNav isDarkMode={isDarkMode} isMenuOpen={isMenuOpen} />
+      <MobileOverlayNav isMenuOpen={isMenuOpen} onThemeChange={onChangeTheme} />
     </div>
   );
 };

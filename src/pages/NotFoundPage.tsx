@@ -1,20 +1,16 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css, useTheme } from '@emotion/react';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import ThemeToggleButton from '../components/ThemeToggleButton';
-import { isDarkModeState } from '../recoil/atoms';
-import { dartkTheme, lightTheme } from '../styles/colors';
 
 // 스타일 정의
-const containerStyle = (isDarkMode: Boolean) => css`
+const containerStyle = (theme: any) => css`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  color: ${isDarkMode ? dartkTheme.mode.text : lightTheme.mode.text};
+  color: ${theme.mode.text};
   font-family: 'Arial', sans-serif;
   text-align: center;
 `;
@@ -25,11 +21,11 @@ const headingStyle = css`
   margin-bottom: 20px;
 `;
 
-const messageStyle = (isDarkMode: Boolean) => css`
+const messageStyle = (theme: any) => css`
   font-size: 1.2rem;
   line-height: 1.5;
   margin-bottom: 40px;
-  color: ${isDarkMode ? dartkTheme.mode.text : lightTheme.mode.text};
+  color: ${theme.mode.text};
 `;
 
 const linkStyle = css`
@@ -47,14 +43,13 @@ const linkStyle = css`
 `;
 
 const NotFoundPage: React.FC = () => {
-  const [isDarkMode, setIsDarkMode] = useRecoilState(isDarkModeState);
-
+  const theme = useTheme()
 
   return (
-    <div css={containerStyle(isDarkMode)}>
+    <div css={containerStyle(theme)}>
       {/* 아이콘 대신 텍스트 */}
       <h1 css={headingStyle}>404 Not Found</h1>
-      <p css={messageStyle(isDarkMode)}>
+      <p css={messageStyle(theme)}>
         The link was a dream,<br />
         A shadow of what once was—<br />
         Now, nothing remains.
