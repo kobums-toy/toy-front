@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, useTheme } from '@emotion/react';
 import React, { useState } from 'react';
-import { useRecoilState } from 'recoil';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import DesktopNav from './DesktopNav';
@@ -65,11 +64,7 @@ const buttonStyle = css`
   }
 `;
 
-interface Header {
-  onChangeTheme: (mode: 'light' | 'dark' | 'auto') => void
-}
-
-const Header: React.FC<Header> = ({ onChangeTheme }) => {
+const Header: React.FC = () => {
   const theme = useTheme()
   const [isMenuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -86,7 +81,7 @@ const Header: React.FC<Header> = ({ onChangeTheme }) => {
           <button css={logoStyle(theme)} onClick={() => handleNavigation('/')}>
             Gowoobro
           </button>
-          <DesktopNav onThemeChange={onChangeTheme} />
+          <DesktopNav />
           <button css={buttonStyle} onClick={() => handleNavigation('/login')}>
             로그인
           </button>
@@ -96,7 +91,7 @@ const Header: React.FC<Header> = ({ onChangeTheme }) => {
         </header>
       </div>
 
-      <MobileOverlayNav isMenuOpen={isMenuOpen} onThemeChange={onChangeTheme} />
+      <MobileOverlayNav isMenuOpen={isMenuOpen} />
     </div>
   );
 };

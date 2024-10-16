@@ -2,8 +2,6 @@
 import { css, useTheme } from '@emotion/react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { dartkTheme } from '../styles/colors';
-import ThemeToggleButton from './ThemeToggleButton';
 
 const navStyle = css`
   display: flex;
@@ -26,15 +24,11 @@ const navItemStyle = (theme: any) => css`
   border-radius: 10px;
   transition: background-color 0.3s ease;
   &:hover {
-    background-color: ${theme.mode == dartkTheme.mode ? '#090909' : '#f5f5f5'};
+    background-color: ${theme.mode.hoverColor};
   }
 `;
 
-interface DesktopNavProps {
-  onThemeChange: (mode: 'light' | 'dark' | 'auto') => void; // 테마 변경 함수
-}
-
-const DesktopNav: React.FC<DesktopNavProps> = ({ onThemeChange }) => {
+const DesktopNav: React.FC = () => {
   const theme = useTheme()
   const navigate = useNavigate();
 
@@ -56,7 +50,6 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ onThemeChange }) => {
       <button css={navItemStyle(theme)} onClick={() => handleNavigation('/item4')}>
         item4
       </button>
-      <ThemeToggleButton onThemeChange={onThemeChange} />
     </nav>
   );
 };

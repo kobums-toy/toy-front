@@ -3,8 +3,6 @@ import { css, useTheme } from '@emotion/react';
 import React from 'react';
 import { FaChevronRight } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { dartkTheme } from '../styles/colors';
-import ThemeToggleButton from './ThemeToggleButton';
 
 const overlayStyle = (isMenuOpen: boolean, theme: any) => css`
   position: fixed;
@@ -12,7 +10,7 @@ const overlayStyle = (isMenuOpen: boolean, theme: any) => css`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: ${theme.mode == dartkTheme.mode ? '#1a1a1a' : '#fff'};
+  background-color: ${theme.mode.background};
   transform: ${isMenuOpen ? 'translateY(0)' : 'translateY(-100vh)'};
   transition: transform 0.8s ease;
   display: flex;
@@ -32,7 +30,7 @@ const menuItemStyle = (theme: any) => css`
   justify-content: space-between;
   align-items: center;
   font-size: 1.5rem;
-  color: ${theme.mode == dartkTheme.mode ? '#fff' : '#000'};
+  color: ${theme.mode.buttonText};
   width: 100vw;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -55,10 +53,9 @@ const arrowIconStyle = css`
 
 interface MobileOverlayNavProps {
   isMenuOpen: boolean;
-  onThemeChange: (mode: 'light' | 'dark' | 'auto') => void; // 테마 변경 함수
 }
 
-const MobileOverlayNav: React.FC<MobileOverlayNavProps> = ({ isMenuOpen, onThemeChange }) => {
+const MobileOverlayNav: React.FC<MobileOverlayNavProps> = ({ isMenuOpen }) => {
   const theme = useTheme()
   const navigate = useNavigate();
 
@@ -92,7 +89,6 @@ const MobileOverlayNav: React.FC<MobileOverlayNavProps> = ({ isMenuOpen, onTheme
           <FaChevronRight />
         </span>
       </div>
-      <ThemeToggleButton onThemeChange={onThemeChange} />
     </div>
   );
 };

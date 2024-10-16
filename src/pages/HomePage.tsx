@@ -2,7 +2,6 @@
 import { css } from '@emotion/react';
 import React from 'react';
 import CardList from '../components/CardList';
-import FloatingActionButton from '../components/FloatingActionButton';
 
 const containerStyle = css`
   flex-direction: column;
@@ -16,7 +15,6 @@ export const HomePage: React.FC = () => {
     <>
       <div css={containerStyle}>
         <CardList />
-        <FloatingActionButton />
       </div>
     </>
   );

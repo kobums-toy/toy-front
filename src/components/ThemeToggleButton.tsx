@@ -5,7 +5,6 @@ import React from 'react';
 // 아이콘은 예시로 설정
 import { FaSun, FaMoon, FaCheck } from 'react-icons/fa';
 import { MdComputer } from "react-icons/md";
-import { dartkTheme, lightTheme } from '../styles/colors';
 
 const buttonGroupStyle = (theme: any) => css`
   display: flex;
@@ -23,8 +22,8 @@ const buttonStyle = (isSelected: boolean, theme: any) => css`
   align-items: center;
   gap: 5px;
   padding: 10px 20px;
-  background-color: ${isSelected ? (theme.mode === dartkTheme.mode ? '#9bbcff' : '#2563eb') : 'transparent'};
-  color: ${theme.mode === dartkTheme.mode ? (isSelected ? '#000000' : '#cccccc') : (isSelected ? '#ffffff' : '#5f6368')};
+  background-color: ${isSelected ? theme.mode.toggleButtonBgHover : 'transparent'};
+  color: ${isSelected ? theme.mode.buttonTextSelect : theme.mode.buttonTextUnselected};
   border-radius: 30px;
   cursor: pointer;
   border: none;
@@ -32,7 +31,7 @@ const buttonStyle = (isSelected: boolean, theme: any) => css`
   transition: background-color 0.3s ease, color 0.3s ease;
 
   &:hover {
-    color: ${theme.mode === dartkTheme.mode ? (isSelected ? '#000000' : '#ffffff') : (isSelected ? '#ffffff' : '#000000')};
+    color: ${isSelected ? theme.mode.buttonTextSelect : theme.mode.text};
   }
 
   svg {

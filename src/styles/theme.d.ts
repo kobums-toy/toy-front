@@ -11,6 +11,12 @@ declare module '@emotion/react' {
       buttonBg: string;
       buttonBgHover: string;
       borderColor: string;
+      hoverColor: string;
+      toggleButtonBgHover: string;
+      buttonTextUnselected: string;
+      buttonTextSelect: string;
+      cardBoxShadow: string;
+      overlayBoxShadow: string;
     };
   }
 
@@ -24,6 +30,12 @@ declare module '@emotion/react' {
       buttonBg: string;
       buttonBgHover: string;
       borderColor: string;
+      hoverColor: string;
+      toggleButtonBgHover: string;
+      buttonTextUnselected: string;
+      buttonTextSelect: string;
+      cardBoxShadow: string;
+      overlayBoxShadow: string;
     };
   }
 }

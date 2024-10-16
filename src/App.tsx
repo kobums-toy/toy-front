@@ -7,8 +7,9 @@ import RouterComponent from './routers/Router'; // Router 컴포넌트 가져오
 import { Layout } from './components/Layout';
 import Header from './components/Header';
 import { ThemeProvider } from '@emotion/react';
-import { dartkTheme, lightTheme } from './styles/colors';
+import { darkTheme, lightTheme } from './styles/colors';
 import useMediaQuery from './hooks/useMediaQeury';
+import FloatingActionButton from './components/FloatingActionButton';
 
 const queryClient = new QueryClient();
 
@@ -20,9 +21,9 @@ const App: React.FC = () => {
   useEffect(() => {
     // themeMode가 변경되면 테마를 업데이트
     if (themeMode === 'auto') {
-      setTheme(prefersDarkMode ? dartkTheme : lightTheme);
+      setTheme(prefersDarkMode ? darkTheme : lightTheme);
     } else {
-      setTheme(themeMode === 'dark' ? dartkTheme : lightTheme);
+      setTheme(themeMode === 'dark' ? darkTheme : lightTheme);
     }
   }, [themeMode, prefersDarkMode]);
 
@@ -36,9 +37,10 @@ const App: React.FC = () => {
         <QueryClientProvider client={queryClient}>
           <GlobalStyle />
           <Router>
-            <Header onChangeTheme={handleThemeChange} />
+            <Header />
             <Layout>
               <RouterComponent /> {/* 라우팅 컴포넌트 분리 */}
+              <FloatingActionButton onThemeChange={handleThemeChange} />
             </Layout>
           </Router>
         </QueryClientProvider>

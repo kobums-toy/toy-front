@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css, useTheme } from '@emotion/react';
 import React, { useState } from 'react';
-import { FaTimes, FaCog } from 'react-icons/fa'; // X 아이콘과 톱니바퀴 아이콘
+import { FaTimes, FaCog } from 'react-icons/fa';
+import ThemeToggleButton from './ThemeToggleButton';
 
 // FAB 스타일 정의
 const fabStyle = (isActive: boolean) => css`
@@ -10,7 +11,7 @@ const fabStyle = (isActive: boolean) => css`
   right: 20px;
   width: 56px;
   height: 56px;
-  background-color: ${isActive ? '#e0e0e0' : '#1a73e8'}; /* 비활성화 시 파란색, 활성화 시 회색 */
+  background-color: ${isActive ? '#e0e0e0' : '#1a73e8'};
   color: ${isActive ? '#333' : 'white'};
   border-radius: 50%;
   display: flex;
@@ -21,7 +22,7 @@ const fabStyle = (isActive: boolean) => css`
   transition: background-color 0.3s ease, color 0.3s ease;
   
   &:hover {
-    background-color: ${isActive ? '#d1d1d1' : '#1766d1'}; /* 호버 시 색상 변화 */
+    background-color: ${isActive ? '#d1d1d1' : '#1766d1'};
   }
 `;
 
@@ -30,18 +31,46 @@ const iconStyle = css`
   font-size: 24px;
 `;
 
-const FloatingActionButton: React.FC = () => {
+// 오버레이 스타일 정의
+const overlayStyle = (isVisible: boolean, theme: any) => css`
+  background-color: ${theme.mode.background};
+  position: fixed;
+  bottom: 90px; /* FAB 버튼 바로 위에 오버레이가 위치하도록 조정 */
+  right: 20px;
+  width: 350px;
+  height: 400px;
+  border-radius: 20px;
+  box-shadow: ${theme.mode.overlayBoxShadow};
+  transition: transform 0.3s ease;
+  transform: ${isVisible ? 'translateY(0)' : 'translateY(100%)'};
+  z-index: 999;
+  padding: 20px;
+  display: ${isVisible ? 'block' : 'none'}; /* FAB 버튼을 눌렀을 때만 보이도록 */
+`;
+
+interface FloatingActionButtonProps {
+  onThemeChange: (mode: 'light' | 'dark' | 'auto') => void; // 테마 변경 함수
+}
+const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ onThemeChange }) => {
+  const theme = useTheme()
   const [isActive, setIsActive] = useState(false);
 
   const handleClick = () => {
-    setIsActive(!isActive); // 클릭 시 활성화/비활성화 상태 토글
+    setIsActive(!isActive);
   };
 
   return (
-    <div css={fabStyle(isActive)} onClick={handleClick}>
-      {/* 활성화 상태에서는 X 아이콘, 비활성화 상태에서는 톱니바퀴 아이콘 */}
-      {isActive ? <FaTimes css={iconStyle} /> : <FaCog css={iconStyle} />}
-    </div>
+    <>
+      {/* FAB 버튼 */}
+      <div css={fabStyle(isActive)} onClick={handleClick}>
+        {isActive ? <FaTimes css={iconStyle} /> : <FaCog css={iconStyle} />}
+      </div>
+
+      {/* FAB를 눌렀을 때 나오는 오버레이 */}
+      <div css={overlayStyle(isActive, theme)}>
+        <ThemeToggleButton onThemeChange={onThemeChange} />
+      </div>
+    </>
   );
 };
 

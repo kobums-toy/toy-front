@@ -4,10 +4,11 @@ import React from 'react';
 
 // 카드 스타일
 const cardStyle = (theme: any) => css`
+  background-color: ${theme.mode.background};
   border-radius: 10px;
   padding: 15px;
   margin: 10px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: ${theme.mode.cardBoxShadow};
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -17,7 +18,7 @@ const cardStyle = (theme: any) => css`
   transition: box-shadow 0.3s ease;
 
   &:hover {
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: ${theme.mode.cardBoxShadow};
   }
 `;
 
@@ -67,6 +68,10 @@ const tagStyle = (theme: any) => css`
   font-size: 0.75rem;
   margin-top: 10px;
   display: inline-block;
+  max-width: fit-content; /* 내용에 맞게 크기를 조정 */
+  text-overflow: ellipsis; /* 긴 텍스트가 잘리도록 처리 */
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  overflow: hidden; /* 텍스트가 길어질 경우 숨김 */
 `;
 
 interface CardItemProps {
@@ -81,7 +86,6 @@ interface CardItemProps {
 
 const CardItem: React.FC<CardItemProps> = ({ title, author, time, views, profileImage, tag, image }) => {
   const theme = useTheme(); // 현재 테마 정보를 가져오기
-  console.log(theme)
 
   return (
     <div css={cardStyle(theme)}>
