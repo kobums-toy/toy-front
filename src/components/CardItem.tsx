@@ -81,15 +81,15 @@ interface CardItemProps {
   views: number;
   profileImage: string;
   tag: string;
-  image?: string;
+  img?: string;
 }
 
-const CardItem: React.FC<CardItemProps> = ({ title, author, time, views, profileImage, tag, image }) => {
+const CardItem: React.FC<CardItemProps> = ({ title, author, time, views, profileImage, tag, img }) => {
   const theme = useTheme(); // 현재 테마 정보를 가져오기
 
   return (
     <div css={cardStyle(theme)}>
-      {image && <img src={image} alt={title} css={imageStyle} />}
+      {img && <img src={img} alt={title} css={imageStyle} />}
       <div css={profileStyle}>
         <img src={profileImage} alt={author} css={profileImageStyle} />
         <div>

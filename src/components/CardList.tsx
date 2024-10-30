@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React from 'react';
+import { BoardItem } from '../models/Board';
 import CardItem from './CardItem';
 
 const cardListStyle = css`
@@ -11,41 +12,23 @@ const cardListStyle = css`
   justify-items: center;
 `;
 
-const CardList: React.FC = () => {
-  const cards = [
-    {
-      title: "유니티 협업 프로젝트 공유하는 방법 툴 정리",
-      author: "parker",
-      time: "1분",
-      views: 47,
-      profileImage: "https://randomuser.me/api/portraits/men/32.jpg",
-      tag: "Unity",
-      image: "https://via.placeholder.com/300x200"
-    },
-    {
-      title: "[Vitepress] Vitepress footnote tooltip",
-      author: "신규현",
-      time: "2분",
-      views: 373,
-      profileImage: "https://randomuser.me/api/portraits/women/44.jpg",
-      tag: "ReactJS",
-      image: "https://via.placeholder.com/300x200"
-    },
-    // 다른 카드들...
-  ];
+interface CardListProps {
+  list: BoardItem[];
+}
 
+const CardList: React.FC<CardListProps> = ({ list }) => {
   return (
     <div css={cardListStyle}>
-      {cards.map((card, index) => (
+      {Array.isArray(list) && list.map((card, index) => (
         <CardItem
           key={index}
           title={card.title}
-          author={card.author}
-          time={card.time}
-          views={card.views}
-          profileImage={card.profileImage}
-          tag={card.tag}
-          image={card.image}
+          author={'김XX'}
+          time={'3분'}
+          views={223}
+          profileImage={"https://randomuser.me/api/portraits/women/44.jpg"}
+          tag={'ReactJS'}
+          img={card.img}
         />
       ))}
     </div>

@@ -4,7 +4,7 @@ import { useRecoilState } from 'recoil';
 import LoginPage from '../pages/LoginPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import { authTokenState } from '../recoil/atoms'; // Recoil의 토큰 상태
-import { setAuthHeader, setupResponseInterceptor } from '../global/request'; // Axios 설정 파일
+// import { setAuthHeader, setupResponseInterceptor } from '../global/request'; // Axios 설정 파일
 import { HomePage } from '../pages/HomePage';
 
 const RouterComponent: React.FC = () => {
@@ -13,14 +13,14 @@ const RouterComponent: React.FC = () => {
 
   useEffect(() => {
     // Recoil의 authToken 값을 기반으로 Authorization 헤더 설정
-    setAuthHeader(authToken);
+    // setAuthHeader(authToken);
 
     // 401 에러 시 로그아웃 및 리다이렉트 처리
-    setupResponseInterceptor(() => {
-      setAuthToken(null); // Recoil 상태 초기화
-      // navigate('/login'); // 로그인 페이지로 이동
-      navigate('/')
-    });
+    // setupResponseInterceptor(() => {
+    //   setAuthToken(null); // Recoil 상태 초기화
+    //   // navigate('/login'); // 로그인 페이지로 이동
+    //   navigate('/')
+    // });
   }, [authToken, navigate, setAuthToken]);
 
   return (
