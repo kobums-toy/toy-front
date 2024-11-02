@@ -3,12 +3,13 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import LoginPage from '../pages/LoginPage';
 import NotFoundPage from '../pages/NotFoundPage';
-import { authTokenState } from '../recoil/atoms'; // Recoil의 토큰 상태
+import { authState } from '../recoil/atoms'; // Recoil의 토큰 상태
 // import { setAuthHeader, setupResponseInterceptor } from '../global/request'; // Axios 설정 파일
 import { HomePage } from '../pages/HomePage';
+import BoardPage from '../pages/BoardPage';
 
 const RouterComponent: React.FC = () => {
-  const [authToken, setAuthToken] = useRecoilState(authTokenState); // Recoil에서 토큰 상태 관리
+  const [authToken, setAuthToken] = useRecoilState(authState); // Recoil에서 토큰 상태 관리
   const navigate = useNavigate(); // React Router의 navigate 함수
 
   useEffect(() => {
@@ -30,6 +31,7 @@ const RouterComponent: React.FC = () => {
       <Route path="/" element={<HomePage />} />
       {/* 로그인 페이지 경로 */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/board" element={<BoardPage />} />
       {/* 대시보드 경로 (로그인 후 접근) */}
       {/* <Route path="/dashboard" element={authToken ? <Dashboard /> : <Navigate to="/login" />} /> */}
       {/* 404 페이지 경로 */}

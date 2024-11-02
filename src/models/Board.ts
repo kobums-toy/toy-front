@@ -20,16 +20,6 @@ export default class Board {
     return res.data
   }
 
-  // static async insertbatch(item: any) {
-  //   const res = await request({
-  //     method: 'POST',
-  //     url: '/api/board/batch',
-  //     data: item
-  //   })
-
-  //   return res.data
-  // }
-
   static async update(item: any) {
     const res = await request({
       method: 'PUT',
@@ -49,16 +39,6 @@ export default class Board {
 
     return res.data
   }
-
-  // static async removebatch(item: any) {
-  //   const res = await request({
-  //     method: 'DELETE',
-  //     url: '/api/board/batch',
-  //     data: item
-  //   })
-
-  //   return res.data
-  // }
 
   static async find(params: any) {
     const res = await request({
@@ -92,15 +72,6 @@ export default class Board {
 
     return res.data
   }
-
-  // static async init() {
-  //   const res = await request({
-  //     method: 'GET',
-  //     url: `/api/board/initdata`
-  //   })
-
-  //   return res.data
-  // }
 
   static async sum(params: string) {
     const res = await request({

@@ -7,7 +7,6 @@ export default class Login {
       url: '/api/jwt',
       params: item
     })
-
     return res.data
   }
 }

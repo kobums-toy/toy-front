@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import React, { useEffect, useState } from 'react';
 import CardList from '../components/CardList';
+import { useGetBoardList } from '../hooks/useBoardForm';
 import Board, { BoardItem } from '../models/Board';
 
 const containerStyle = css`
@@ -12,25 +13,14 @@ const containerStyle = css`
 `;
 
 export const HomePage: React.FC = () => {
+  const { data, isLoading, isError } = useGetBoardList();
   const [board, setBoard] = useState<BoardItem[]>([])
 
   useEffect(() => {
-    getBoards()
-  }, [])
-
-  const getBoards = async () => {
-    let res = await Board.find({
-      // id: 0,
-      // title: '',
-      // content: '',
-      // img: '',
-      // startdate: '',
-      // enddate: '',
-    })
-    setBoard(res.items)
-    console.log(res.items)
-  }
-
+    if (data && !isLoading && !isError) {
+      setBoard(data.items); // data.items가 있다고 가정
+    }
+  }, [data, isLoading, isError]);
 
   return (
     <>

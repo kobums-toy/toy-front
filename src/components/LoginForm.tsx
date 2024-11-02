@@ -37,15 +37,15 @@ const buttonStyle = css`
 `;
 
 const LoginForm: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('honggildong@naver.com');
+  const [password, setPassword] = useState('qwer1234!');
   const { mutate: login, isLoading, error } = useAuth();
 
   // onSubmit 이벤트 타입을 명시합니다.
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    login({ username: username, password: password });
-  };
+    login({ email: username, passwd: password });
+  }
 
   return (
     <form css={formStyle} onSubmit={handleSubmit}>
@@ -69,7 +69,7 @@ const LoginForm: React.FC = () => {
         <button css={buttonStyle} type="submit" disabled={isLoading}>
           {isLoading ? 'Logging in...' : 'Login'}
         </button>
-        {error && <p style={{ color: 'red' }}>Login failed. Please try again.</p>}
+        {error && <p style={{ color: 'red' }}>{(error as Error).message}</p>}
       </>
     </form>
   );

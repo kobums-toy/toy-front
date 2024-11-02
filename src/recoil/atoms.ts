@@ -2,12 +2,10 @@ import { atom } from 'recoil';
 
 export const authState = atom({
   key: 'authState',
-  default: false,
-});
-
-export const authTokenState = atom<string | null>({
-  key: 'authTokenState',
-  default: null,
+  default: {
+    isAuthenticated: false,
+    accessToken: null as string | null,
+  },
 });
 
 // 다크모드 상태

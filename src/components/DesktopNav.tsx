@@ -38,10 +38,10 @@ const DesktopNav: React.FC = () => {
 
   return (
     <nav css={navStyle}>
-      <button css={navItemStyle(theme)} onClick={() => handleNavigation('/item1')}>
+      <button css={navItemStyle(theme)} onClick={() => handleNavigation('/')}>
         item1
       </button>
-      <button css={navItemStyle(theme)} onClick={() => handleNavigation('/item2')}>
+      <button css={navItemStyle(theme)} onClick={() => handleNavigation('/board')}>
         item2
       </button>
       <button css={navItemStyle(theme)} onClick={() => handleNavigation('/item3')}>
