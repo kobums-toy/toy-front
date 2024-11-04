@@ -2,10 +2,11 @@ import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import Login from '../models/login';
-import { authState } from '../recoil/atoms';
+import { authState, userInfoState } from '../recoil/atoms';
 
 export const useAuth = () => {
   const setAuthState = useSetRecoilState(authState);
+  const setUserInfoState = useSetRecoilState(userInfoState);
   const navigate = useNavigate();
 
   return useMutation(Login.login, {
@@ -16,6 +17,7 @@ export const useAuth = () => {
           isAuthenticated: true,
           accessToken: accessToken,
         }); // authState에 accessToken 저장
+        setUserInfoState(data.user)
         navigate('/'); // '/' 페이지로 이동
       } else {
         throw new Error(data.message);

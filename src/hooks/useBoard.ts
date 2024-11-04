@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import Board from '../models/Board';
+import Board from '../models/board';
 
 // 게시글 목록 가져오기 훅
 export const useGetBoardList = (params?: any) => {

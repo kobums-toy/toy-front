@@ -41,16 +41,6 @@ export default class User {
     return res.data
   }
 
-  // static async insertbatch(item: any) {
-  //   const res = await request({
-  //     method: 'POST',
-  //     url: '/api/user/batch',
-  //     data: item
-  //   })
-
-  //   return res.data
-  // }
-
   static async update(item: any) {
     const res = await request({
       method: 'PUT',
@@ -70,16 +60,6 @@ export default class User {
 
     return res.data
   }
-
-  // static async removebatch(item: any) {
-  //   const res = await request({
-  //     method: 'DELETE',
-  //     url: '/api/user/batch',
-  //     data: item
-  //   })
-
-  //   return res.data
-  // }
 
   static async find(params: any) {
     const res = await request({
@@ -114,19 +94,10 @@ export default class User {
     return res.data
   }
 
-  // static async init() {
-  //   const res = await request({
-  //     method: 'GET',
-  //     url: `/api/user/initdata`
-  //   })
-
-  //   return res.data
-  // }
-
-  static async sum(params: string) {
+  static async me() {
     const res = await request({
       method: 'GET',
-      url: `/api/user/sum?${params}`
+      url: `/api/me`
     })
 
     return res.data

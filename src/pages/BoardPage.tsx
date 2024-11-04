@@ -1,8 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePostBoard } from '../hooks/useBoardForm';
+import { useRecoilValue } from 'recoil';
+import { usePostBoard } from '../hooks/useBoard';
+import { BoardItem, initBoard } from '../models/board';
+import { userInfoState } from '../recoil/atoms';
 import { primaryColor, primaryColorHover } from '../styles/colors';
 
 const formStyle = css`
@@ -54,37 +57,38 @@ const buttonStyle = css`
 `;
 
 const BoardForm: React.FC = () => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [board, setBoard] = useState<BoardItem>(initBoard);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+  const userInfo = useRecoilValue(userInfoState)
+
   const { mutate } = usePostBoard();
   const navigator = useNavigate();
+
+  useEffect(() => {
+    board.user = userInfo.id
+  }, [])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setImage(file);
       setImagePreview(URL.createObjectURL(file));
+      setBoard({ ...board, img: file.name })
     }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('content', content);
-    if (image) formData.append('img', image);
+    if (image) {
+      setBoard({ ...board, img: image.name })
+    }
 
-    mutate(formData, {
+    mutate(board, {
       onSuccess: () => {
         alert('게시글이 성공적으로 작성되었습니다.');
-        setTitle('');
-        setContent('');
-        setImage(null);
-        setImagePreview(null);
         navigator('/')
       },
       onError: () => {
@@ -100,15 +104,25 @@ const BoardForm: React.FC = () => {
         css={inputStyle}
         type="text"
         placeholder="제목"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        value={board.title}
+        onChange={(e) => setBoard((curBoard) => {
+          return {
+            ...curBoard,
+            title: e.target.value,
+          }
+        })}
         required
       />
       <textarea
         css={textareaStyle}
         placeholder="내용을 입력하세요"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
+        value={board.content}
+        onChange={(e) => setBoard((curBoard) => {
+          return {
+            ...curBoard,
+            content: e.target.value,
+          }
+        })}
         required
       />
       <input

@@ -50,7 +50,6 @@ const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ onThemeChange }) 
   const handleButtonClick = (mode: 'light' | 'dark' | 'auto') => {
     setSelectedMode(mode);
     onThemeChange(mode); // 부모 컴포넌트(App)에서 테마 모드를 변경하도록 함
-    console.log("aaa")
   };
 
   return (

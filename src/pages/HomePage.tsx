@@ -2,8 +2,8 @@
 import { css } from '@emotion/react';
 import React, { useEffect, useState } from 'react';
 import CardList from '../components/CardList';
-import { useGetBoardList } from '../hooks/useBoardForm';
-import Board, { BoardItem } from '../models/Board';
+import { useGetBoardList } from '../hooks/useBoard';
+import Board, { BoardItem } from '../models/board';
 
 const containerStyle = css`
   flex-direction: column;

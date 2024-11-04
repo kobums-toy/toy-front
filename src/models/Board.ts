@@ -1,11 +1,31 @@
 import request from '../global/request'
 
+
+export const initBoard = {
+  id: 0,
+  title: '',
+  content: '',
+  img: '',
+  user: 0,
+  date: '',
+}
+
 export interface BoardItem {
   id: number;
   title: string;
   content: string;
-  date: string;
   img: string;
+  user: number;
+  date: string;
+}
+
+export interface BoardReturn {
+  id: number;
+  title: string;
+  content: string;
+  img: string;
+  user: number;
+  date: string;
   extra: object;
 }
 
@@ -68,15 +88,6 @@ export default class Board {
     const res = await request({
       method: 'GET',
       url: `/api/board/${id}`
-    })
-
-    return res.data
-  }
-
-  static async sum(params: string) {
-    const res = await request({
-      method: 'GET',
-      url: `/api/board/sum?${params}`
     })
 
     return res.data

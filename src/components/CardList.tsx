@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React from 'react';
-import { BoardItem } from '../models/Board';
+import { BoardItem } from '../models/board';
 import CardItem from './CardItem';
 
 const cardListStyle = css`
