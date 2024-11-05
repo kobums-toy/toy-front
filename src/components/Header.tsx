@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import DesktopNav from './DesktopNav';
+import LoginLogoutButton from './LoginButton';
 import MobileOverlayNav from './MobileOverlayNav';
 
 const headerWrapperStyle = (theme: any) => css`
@@ -48,22 +49,6 @@ const hamburgerStyle = css`
   }
 `;
 
-const buttonStyle = css`
-  background-color: #1a73e8;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  min-width: 80px;
-  &:hover {
-    background-color: #1766d1;
-  }
-`;
-
 const Header: React.FC = () => {
   const theme = useTheme()
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -82,9 +67,7 @@ const Header: React.FC = () => {
             Gowoobro
           </button>
           <DesktopNav />
-          <button css={buttonStyle} onClick={() => handleNavigation('/login')}>
-            로그인
-          </button>
+          <LoginLogoutButton />
           <div css={hamburgerStyle} onClick={() => setMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <FaTimes /> : <FaBars />}
           </div>
