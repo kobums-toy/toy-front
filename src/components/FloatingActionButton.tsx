@@ -48,10 +48,7 @@ const overlayStyle = (isVisible: boolean, theme: any) => css`
   display: ${isVisible ? 'block' : 'none'}; /* FAB 버튼을 눌렀을 때만 보이도록 */
 `;
 
-interface FloatingActionButtonProps {
-  onThemeChange: (mode: 'light' | 'dark' | 'auto') => void; // 테마 변경 함수
-}
-const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ onThemeChange }) => {
+const FloatingActionButton: React.FC = () => {
   const theme = useTheme()
   const [isActive, setIsActive] = useState(false);
 
@@ -68,7 +65,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ onThemeChan
 
       {/* FAB를 눌렀을 때 나오는 오버레이 */}
       <div css={overlayStyle(isActive, theme)}>
-        <ThemeToggleButton onThemeChange={onThemeChange} />
+        <ThemeToggleButton />
       </div>
     </>
   );

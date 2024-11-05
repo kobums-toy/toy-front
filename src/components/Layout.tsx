@@ -17,5 +17,11 @@ const containerStyle = css`
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const theme = useTheme()
 
-  return <div css={themeStyle(theme)}><div css={containerStyle}>{children}</div></div>;
+  return (
+    <div css={themeStyle(theme)}>
+      <div css={containerStyle}>
+        {children}
+      </div>
+    </div>
+  )
 };

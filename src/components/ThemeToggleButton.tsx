@@ -5,6 +5,8 @@ import React from 'react';
 // 아이콘은 예시로 설정
 import { FaSun, FaMoon, FaCheck } from 'react-icons/fa';
 import { MdComputer } from "react-icons/md";
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { themeModeState } from '../recoil/atoms';
 
 const buttonGroupStyle = (theme: any) => css`
   display: flex;
@@ -39,40 +41,36 @@ const buttonStyle = (isSelected: boolean, theme: any) => css`
   }
 `;
 
-interface ThemeToggleButtonProps {
-  onThemeChange: (mode: 'light' | 'dark' | 'auto') => void; // 테마 변경 콜백 함수
-}
-
-const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ onThemeChange }) => {
+const ThemeToggleButton: React.FC = () => {
   const theme = useTheme()
-  const [selectedMode, setSelectedMode] = React.useState<'light' | 'dark' | 'auto'>('auto');
+  const setThemeModeState = useSetRecoilState(themeModeState)
+  const themeModea = useRecoilValue(themeModeState)
 
   const handleButtonClick = (mode: 'light' | 'dark' | 'auto') => {
-    setSelectedMode(mode);
-    onThemeChange(mode); // 부모 컴포넌트(App)에서 테마 모드를 변경하도록 함
+    setThemeModeState(mode);
   };
 
   return (
     <div css={buttonGroupStyle(theme)}>
       <button
-        css={buttonStyle(selectedMode === 'light', theme)}
+        css={buttonStyle(themeModea === 'light', theme)}
         onClick={() => handleButtonClick('light')}
       >
-        {selectedMode === 'light' ? <FaCheck /> : <FaSun />}
+        {themeModea === 'light' ? <FaCheck /> : <FaSun />}
         밝게
       </button>
       <button
-        css={buttonStyle(selectedMode === 'dark', theme)}
+        css={buttonStyle(themeModea === 'dark', theme)}
         onClick={() => handleButtonClick('dark')}
       >
-        {selectedMode === 'dark' ? <FaCheck /> : <FaMoon />}
+        {themeModea === 'dark' ? <FaCheck /> : <FaMoon />}
         어둡게
       </button>
       <button
-        css={buttonStyle(selectedMode === 'auto', theme)}
+        css={buttonStyle(themeModea === 'auto', theme)}
         onClick={() => handleButtonClick('auto')}
       >
-        {selectedMode === 'auto' ? <FaCheck /> : <MdComputer />}
+        {themeModea === 'auto' ? <FaCheck /> : <MdComputer />}
         기기 설정
       </button>
     </div>
