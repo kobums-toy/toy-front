@@ -87,7 +87,7 @@ interface CardItemProps {
 }
 
 const CardItem: React.FC<CardItemProps> = ({ id, title, author, time, views, profileImage, tag, img }) => {
-  const theme = useTheme(); // 현재 테마 정보를 가져오기
+  ; // 현재 테마 정보를 가져오기
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -95,7 +95,7 @@ const CardItem: React.FC<CardItemProps> = ({ id, title, author, time, views, pro
   };
 
   return (
-    <div css={cardStyle(theme)} onClick={handleClick}>
+    <div css={cardStyle} onClick={handleClick}>
       {img && <img src={img} alt={title} css={imageStyle} />}
       <div css={profileStyle}>
         <img src={profileImage} alt={author} css={profileImageStyle} />
@@ -103,11 +103,11 @@ const CardItem: React.FC<CardItemProps> = ({ id, title, author, time, views, pro
           <span>{author}</span>
         </div>
       </div>
-      <div css={titleStyle(theme)}>{title}</div>
-      <div css={infoStyle(theme)}>
+      <div css={titleStyle}>{title}</div>
+      <div css={infoStyle}>
         {time} 분량 · 조회수 {views}
       </div>
-      <div css={tagStyle(theme)}>{tag}</div>
+      <div css={tagStyle}>{tag}</div>
     </div>
   );
 };

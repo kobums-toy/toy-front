@@ -9,10 +9,10 @@ const containerStyle = (theme: any) => css`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   color: ${theme.mode.text};
   font-family: 'Arial', sans-serif;
   text-align: center;
+  height: calc(100vh - 60px);
 `;
 
 const headingStyle = css`
@@ -43,19 +43,19 @@ const linkStyle = css`
 `;
 
 const NotFoundPage: React.FC = () => {
-  const theme = useTheme()
-
   return (
-    <div css={containerStyle(theme)}>
-      {/* 아이콘 대신 텍스트 */}
-      <h1 css={headingStyle}>404 Not Found</h1>
-      <p css={messageStyle(theme)}>
-        The link was a dream,<br />
-        A shadow of what once was—<br />
-        Now, nothing remains.
-      </p>
-      <Link to="/" css={linkStyle}>Go Back Home</Link>
-    </div>
+    <>
+      <div css={containerStyle}>
+        {/* 아이콘 대신 텍스트 */}
+        <h1 css={headingStyle}>404 Not Found</h1>
+        <p css={messageStyle}>
+          The link was a dream,<br />
+          A shadow of what once was—<br />
+          Now, nothing remains.
+        </p>
+        <Link to="/" css={linkStyle}>Go Back Home</Link>
+      </div>
+    </>
   );
 };
 

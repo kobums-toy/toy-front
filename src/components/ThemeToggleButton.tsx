@@ -51,7 +51,7 @@ const ThemeToggleButton: React.FC = () => {
   };
 
   return (
-    <div css={buttonGroupStyle(theme)}>
+    <div css={buttonGroupStyle}>
       <button
         css={buttonStyle(themeModea === 'light', theme)}
         onClick={() => handleButtonClick('light')}

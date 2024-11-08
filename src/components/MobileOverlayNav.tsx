@@ -65,25 +65,25 @@ const MobileOverlayNav: React.FC<MobileOverlayNavProps> = ({ isMenuOpen }) => {
 
   return (
     <div css={overlayStyle(isMenuOpen, theme)}>
-      <div css={menuItemStyle(theme)} onClick={() => handleNavigation('/item1')}>
+      <div css={menuItemStyle} onClick={() => handleNavigation('/item1')}>
         item1
         <span css={arrowIconStyle}>
           <FaChevronRight />
         </span>
       </div>
-      <div css={menuItemStyle(theme)} onClick={() => handleNavigation('/item2')}>
+      <div css={menuItemStyle} onClick={() => handleNavigation('/item2')}>
         item2
         <span css={arrowIconStyle}>
           <FaChevronRight />
         </span>
       </div>
-      <div css={menuItemStyle(theme)} onClick={() => handleNavigation('/item3')}>
+      <div css={menuItemStyle} onClick={() => handleNavigation('/item3')}>
         item3
         <span css={arrowIconStyle}>
           <FaChevronRight />
         </span>
       </div>
-      <div css={menuItemStyle(theme)} onClick={() => handleNavigation('/item4')}>
+      <div css={menuItemStyle} onClick={() => handleNavigation('/item4')}>
         item4
         <span css={arrowIconStyle}>
           <FaChevronRight />

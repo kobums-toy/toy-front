@@ -29,7 +29,7 @@ const navItemStyle = (theme: any) => css`
 `;
 
 const DesktopNav: React.FC = () => {
-  const theme = useTheme()
+
   const navigate = useNavigate();
 
   const handleNavigation = (path: string) => {
@@ -38,16 +38,16 @@ const DesktopNav: React.FC = () => {
 
   return (
     <nav css={navStyle}>
-      <button css={navItemStyle(theme)} onClick={() => handleNavigation('/')}>
-        item1
+      <button css={navItemStyle} onClick={() => handleNavigation('/')}>
+        DashBoard
       </button>
-      <button css={navItemStyle(theme)} onClick={() => handleNavigation('/board')}>
-        item2
+      <button css={navItemStyle} onClick={() => handleNavigation('/board')}>
+        Board
       </button>
-      <button css={navItemStyle(theme)} onClick={() => handleNavigation('/item3')}>
+      <button css={navItemStyle} onClick={() => handleNavigation('/item3')}>
         item3
       </button>
-      <button css={navItemStyle(theme)} onClick={() => handleNavigation('/item4')}>
+      <button css={navItemStyle} onClick={() => handleNavigation('/item4')}>
         item4
       </button>
     </nav>

@@ -50,7 +50,7 @@ const hamburgerStyle = css`
 `;
 
 const Header: React.FC = () => {
-  const theme = useTheme()
+
   const [isMenuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -61,9 +61,9 @@ const Header: React.FC = () => {
 
   return (
     <div>
-      <div css={headerWrapperStyle(theme)}>
+      <div css={headerWrapperStyle}>
         <header css={headerContentStyle}>
-          <button css={logoStyle(theme)} onClick={() => handleNavigation('/')}>
+          <button css={logoStyle} onClick={() => handleNavigation('/')}>
             Gowoobro
           </button>
           <DesktopNav />
