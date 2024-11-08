@@ -8,6 +8,7 @@ import { authState } from '../recoil/atoms'; // Recoil의 토큰 상태
 import { HomePage } from '../pages/HomePage';
 import BoardDetailPage from '../pages/BoardDetailPage';
 import { BoardPage } from '../pages/BoardPage';
+import BoardInseartPage from '../pages/BoardInseartPage';
 
 const RouterComponent: React.FC = () => {
   const [authToken, setAuthToken] = useRecoilState(authState); // Recoil에서 토큰 상태 관리
@@ -34,6 +35,7 @@ const RouterComponent: React.FC = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/board" element={<BoardPage />} />
       <Route path="/board/:id" element={<BoardDetailPage />} />
+      <Route path="/board/write" element={<BoardInseartPage />} />
       {/* 대시보드 경로 (로그인 후 접근) */}
       {/* <Route path="/dashboard" element={authToken ? <Dashboard /> : <Navigate to="/login" />} /> */}
       {/* 404 페이지 경로 */}

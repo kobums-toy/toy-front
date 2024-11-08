@@ -1,9 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { css, useTheme } from '@emotion/react';
 import { useGetBoard } from '../hooks/useBoard';
 import { BoardItem } from '../models/board';
+import { userInfoState } from '../recoil/atoms';
+import { useRecoilValue } from 'recoil';
 
 const containerStyle = css`
   max-width: 800px;
@@ -112,6 +114,8 @@ const BoardDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, isError } = useGetBoard(id ? +id : 0);
   const [boardData, setBoardData] = useState<BoardItem>();
+  const userInfo = useRecoilValue(userInfoState); // Retrieve current user's info
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (data && !isLoading && !isError) {
@@ -120,6 +124,17 @@ const BoardDetailPage: React.FC = () => {
   }, [data, isLoading, isError]);
 
   if (!boardData) return <p>Loading...</p>;
+
+  const handleEdit = () => {
+    // Implement edit functionality here
+    console.log("Edit post", boardData.id);
+    navigate("/board/write", { state: { ...boardData } })
+  };
+
+  const handleDelete = () => {
+    // Implement delete functionality here
+    console.log("Delete post", boardData.id);
+  };
 
   return (
     <div css={containerStyle}>
@@ -176,6 +191,14 @@ const BoardDetailPage: React.FC = () => {
           복사
         </button>
       </div>
+
+      {/* Edit and Delete Buttons (Conditionally Rendered) */}
+      {boardData.user === userInfo.id && (
+        <div css={footerStyle}>
+          <button css={buttonStyle} onClick={handleEdit}>수정</button>
+          <button css={buttonStyle} onClick={handleDelete}>삭제</button>
+        </div>
+      )}
     </div>
   );
 };
