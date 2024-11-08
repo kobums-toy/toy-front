@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css, useTheme } from '@emotion/react';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // 카드 스타일
 const cardStyle = (theme: any) => css`
@@ -75,6 +76,7 @@ const tagStyle = (theme: any) => css`
 `;
 
 interface CardItemProps {
+  id: number;
   title: string;
   author: string;
   time: string;
@@ -84,11 +86,16 @@ interface CardItemProps {
   img?: string;
 }
 
-const CardItem: React.FC<CardItemProps> = ({ title, author, time, views, profileImage, tag, img }) => {
+const CardItem: React.FC<CardItemProps> = ({ id, title, author, time, views, profileImage, tag, img }) => {
   const theme = useTheme(); // 현재 테마 정보를 가져오기
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/board/${id}`); // 각 카드 아이템의 ID에 따라 상세 페이지로 이동
+  };
 
   return (
-    <div css={cardStyle(theme)}>
+    <div css={cardStyle(theme)} onClick={handleClick}>
       {img && <img src={img} alt={title} css={imageStyle} />}
       <div css={profileStyle}>
         <img src={profileImage} alt={author} css={profileImageStyle} />

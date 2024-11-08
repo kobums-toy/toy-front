@@ -22,6 +22,7 @@ const CardList: React.FC<CardListProps> = ({ list }) => {
       {Array.isArray(list) && list.map((card, index) => (
         <CardItem
           key={index}
+          id={card.id}
           title={card.title}
           author={'김XX'}
           time={'3분'}

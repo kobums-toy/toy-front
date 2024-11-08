@@ -6,7 +6,8 @@ import NotFoundPage from '../pages/NotFoundPage';
 import { authState } from '../recoil/atoms'; // Recoil의 토큰 상태
 // import { setAuthHeader, setupResponseInterceptor } from '../global/request'; // Axios 설정 파일
 import { HomePage } from '../pages/HomePage';
-import BoardPage from '../pages/BoardPage';
+import BoardDetailPage from '../pages/BoardDetailPage';
+import { BoardPage } from '../pages/BoardPage';
 
 const RouterComponent: React.FC = () => {
   const [authToken, setAuthToken] = useRecoilState(authState); // Recoil에서 토큰 상태 관리
@@ -32,6 +33,7 @@ const RouterComponent: React.FC = () => {
       {/* 로그인 페이지 경로 */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/board" element={<BoardPage />} />
+      <Route path="/board/:id" element={<BoardDetailPage />} />
       {/* 대시보드 경로 (로그인 후 접근) */}
       {/* <Route path="/dashboard" element={authToken ? <Dashboard /> : <Navigate to="/login" />} /> */}
       {/* 404 페이지 경로 */}
