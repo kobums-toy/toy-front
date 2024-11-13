@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { primaryColor, primaryColorHover } from '../styles/colors';
+import { Link } from 'react-router-dom';
 
 const formStyle = css`
   display: flex;
@@ -33,6 +34,22 @@ const buttonStyle = css`
 
   &:hover {
     background-color: ${primaryColorHover};
+  }
+`;
+
+const signUpLinkStyle = css`
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: ${primaryColor};
+
+  a {
+    color: ${primaryColor};
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 `;
 
@@ -70,6 +87,9 @@ const LoginForm: React.FC = () => {
           {isLoading ? 'Logging in...' : 'Login'}
         </button>
         {error && <p style={{ color: 'red' }}>{(error as Error).message}</p>}
+        <div css={signUpLinkStyle}>
+          Don’t have an account? <Link to="/signup">Sign Up</Link>
+        </div>
       </>
     </form>
   );

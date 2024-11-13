@@ -9,6 +9,7 @@ import { HomePage } from '../pages/HomePage';
 import BoardDetailPage from '../pages/BoardDetailPage';
 import { BoardPage } from '../pages/BoardPage';
 import BoardInseartPage from '../pages/BoardInseartPage';
+import SignUpPage from '../pages/SignUpPage';
 
 const RouterComponent: React.FC = () => {
   const [authToken, setAuthToken] = useRecoilState(authState); // Recoil에서 토큰 상태 관리
@@ -33,6 +34,7 @@ const RouterComponent: React.FC = () => {
       <Route path="/" element={<HomePage />} />
       {/* 로그인 페이지 경로 */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
       <Route path="/board" element={<BoardPage />} />
       <Route path="/board/:id" element={<BoardDetailPage />} />
       <Route path="/board/write" element={<BoardInseartPage />} />
