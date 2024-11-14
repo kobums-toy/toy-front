@@ -2,8 +2,8 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import User from '../models/user';
 
 // 유저 목록 가져오기 훅
-export const useGetUserList = (params?: any) => {
-  return useQuery(['userList', params], () => User.find(params));
+export const useGetUserList = (params?: any, isEnabled: boolean = false) => {
+  return useQuery(['userList', params], () => User.find(params), { enabled: isEnabled });
 };
 
 // 특정 유저 가져오기 훅
