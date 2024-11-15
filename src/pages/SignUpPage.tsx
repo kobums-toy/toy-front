@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Modal from '../components/Modal';
 import { useGetUserList, usePostUser } from '../hooks/useUser';
 
 // Sign-Up Form Styles
@@ -55,8 +56,10 @@ const SignUpPage: React.FC = () => {
   const [email, setEmail] = useState('test@test.com');
   const [password, setPassword] = useState('test1234!!');
   const [confirmPassword, setConfirmPassword] = useState('test1234!!');
-  const [errors, setErrors] = useState<string[]>([]);
+  const [modalType, setModalType] = useState<'error' | 'info' | null>(null);
+  const [modalMessage, setModalMessage] = useState('');
   const [isEmailChecked, setIsEmailChecked] = useState(false); // Track if email is checked
+  const [navigateAfterClose, setNavigateAfterClose] = useState(false);
 
   const { refetch: checkEmail } = useGetUserList({ email }); // Check for email existence
   const { mutate: postUser, isLoading, error } = usePostUser();
@@ -77,10 +80,12 @@ const SignUpPage: React.FC = () => {
     const { data } = await checkEmail();
 
     if (data && data.items.some((user: any) => user.email === email)) {
-      setErrors(["Email is already in use."]);
+      setModalType('error');
+      setModalMessage("Email is already in use.");
       setIsEmailChecked(false);
     } else {
-      setErrors([]);
+      setModalType('info');
+      setModalMessage("Email is available.");
       setIsEmailChecked(true);
     }
   };
@@ -90,12 +95,14 @@ const SignUpPage: React.FC = () => {
     const validationErrors = [];
 
     const onSuccess = () => {
-      alert(`회원가입이 성공적으로 완료 되었습니다.`);
-      navigator('/login');
+      setModalType('info');
+      setModalMessage('Sign-up successful!');
+      setNavigateAfterClose(true); // 로그인 페이지로 이동 준비
     };
 
     const onError = () => {
-      alert(`회원가입에 실패했습니다.`);
+      setModalType('error');
+      setModalMessage('Sign-up failed.');
     };
 
     if (!validateEmail(email)) {
@@ -111,12 +118,20 @@ const SignUpPage: React.FC = () => {
     }
 
     if (validationErrors.length > 0) {
-      setErrors(validationErrors);
+      setModalType('error');
+      setModalMessage(validationErrors.join('\n'));
     } else {
-      setErrors([]);
       postUser({ email, name, passwd: password }, { onSuccess, onError });
     }
   }
+
+  const handleCloseModal = () => {
+    setModalType(null);
+    if (navigateAfterClose) {
+      navigator('/login');
+    }
+  }
+
   return (
     <form css={formStyle} onSubmit={handleSubmit}>
       <>
@@ -134,8 +149,13 @@ const SignUpPage: React.FC = () => {
         <input css={inputStyle} type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         <input css={inputStyle} type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
         <button css={buttonStyle} type="submit" disabled={isLoading || !isEmailChecked}>{isLoading ? 'Signing Up...' : 'Sign Up'}</button>
-        {error && <p css={errorStyle}>{(error as Error)?.message}</p>}
-        {errors && <p css={errorStyle}>{(errors as String[])?.join('\n')}</p>}
+        {modalType && (
+          <Modal
+            type={modalType}
+            message={modalMessage}
+            onClose={handleCloseModal}
+          />
+        )}
       </>
     </form>
   );
