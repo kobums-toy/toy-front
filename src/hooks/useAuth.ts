@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import Kakao from '../models/kakao';
 import Login from '../models/login';
+import naver from '../models/naver';
 import { authState, userInfoState } from '../recoil/atoms';
 
 export const useAuth = () => {
@@ -29,6 +30,14 @@ export const useAuth = () => {
 
 export const useKakaoAuth = () => {
   return useMutation(Kakao.kakaoLogin, {
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
+};
+
+export const useNaverAuth = () => {
+  return useMutation(naver.naverLogin, {
     onSuccess: (data) => {
       console.log(data);
     },
