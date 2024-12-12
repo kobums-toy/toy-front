@@ -1,6 +1,7 @@
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
+import Kakao from '../models/kakao';
 import Login from '../models/login';
 import { authState, userInfoState } from '../recoil/atoms';
 
@@ -22,6 +23,14 @@ export const useAuth = () => {
       } else {
         throw new Error(data.message);
       }
+    },
+  });
+};
+
+export const useKakaoAuth = () => {
+  return useMutation(Kakao.kakaoLogin, {
+    onSuccess: (data) => {
+      console.log(data);
     },
   });
 };

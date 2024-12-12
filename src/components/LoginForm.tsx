@@ -1,9 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import React, { useEffect, useState } from 'react';
+import { useAuth, useKakaoAuth } from '../hooks/useAuth';
 import { primaryColor, primaryColorHover } from '../styles/colors';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import Modal from './Modal';
+import KakaoLoginButton from './KakaoLoginButton';
 
 const formStyle = css`
   display: flex;
@@ -57,16 +59,34 @@ const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('honggildong@naver.com');
   const [password, setPassword] = useState('qwer1234!');
   const { mutate: login, isLoading, error } = useAuth();
+  const { mutate: kakaoLogin, isLoading: kakaoLoginLoading, error: kakaoLoginError } = useKakaoAuth();
+  const [showErrorModal, setShowErrorModal] = useState(false);
+
+  const location = useLocation(); // Get the current location
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const code = params.get('code'); // Extract the "code" parameter
+
+    if (code) {
+      console.log('Kakao login code:', code);
+      kakaoLogin({ client_id: process.env.REACT_APP_KAKAO_JS_KEY, redirect_uri: process.env.REACT_APP_KAKAO_REDIRECT_URL, grant_type: 'authorization_code', code: code });
+    } else {
+      console.error('No code parameter found in the URL');
+    }
+  }, [location.search]);
 
   // onSubmit 이벤트 타입을 명시합니다.
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    login({ email: username, passwd: password });
+    login({ email: username, passwd: password }, {
+      onError: () => setShowErrorModal(true),
+    });
   }
 
   return (
-    <form css={formStyle} onSubmit={handleSubmit}>
-      <>
+    <>
+      <form css={formStyle} onSubmit={handleSubmit}>
         <input
           css={inputStyle}
           type="text"
@@ -86,12 +106,19 @@ const LoginForm: React.FC = () => {
         <button css={buttonStyle} type="submit" disabled={isLoading}>
           {isLoading ? 'Logging in...' : 'Login'}
         </button>
-        {error && <p style={{ color: 'red' }}>{(error as Error).message}</p>}
         <div css={signUpLinkStyle}>
           Don’t have an account? <Link to="/signup">Sign Up</Link>
         </div>
-      </>
-    </form>
+      </form>
+      <KakaoLoginButton />
+      {showErrorModal && (
+        <Modal
+          type="error"
+          message={(error as Error)?.message || 'An error occurred. Please try again.'}
+          onClose={() => setShowErrorModal(false)}
+        />
+      )}
+    </>
   );
 };
 

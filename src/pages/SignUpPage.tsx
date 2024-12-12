@@ -45,12 +45,6 @@ const buttonStyle = css`
   }
 `;
 
-const errorStyle = css`
-  color: red;
-  font-size: 0.85rem;
-  margin: 10px 0;
-`;
-
 const SignUpPage: React.FC = () => {
   const [name, setName] = useState('김땡땡');
   const [email, setEmail] = useState('test@test.com');
