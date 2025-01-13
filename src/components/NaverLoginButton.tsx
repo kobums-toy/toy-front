@@ -6,7 +6,7 @@ const buttonStyle = css`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: #fee500; /* Kakao 노란색 */
+  background-color: #fee500; /* Naver 노란색 */
   border: none;
   border-radius: 8px;
   padding: 10px 16px;
@@ -27,20 +27,20 @@ const buttonStyle = css`
 `;
 
 const NaverLoginButton: React.FC = () => {
-  const doKakaoLogin = () => {
+  const doNaverLogin = () => {
     const clientId = process.env.REACT_APP_NAVER_CLIENT_ID;
     const redirectUri = process.env.REACT_APP_NAVER_REDIRECT_URL;
     const scope = 'profile_nickname account_email profile_image name';
 
     const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=STATE_STRING`;
 
-    // Redirect user to Kakao authorization page
+    // Redirect user to Naver authorization page
     window.location.href = naverAuthUrl;
   };
 
   return (
-    <button css={buttonStyle} onClick={doKakaoLogin}>
-      <img src="/kakao_login/pngegg.png" alt="Kakao Logo" />
+    <button css={buttonStyle} onClick={doNaverLogin}>
+      <img src="/kakao_login/pngegg.png" alt="Naver Logo" />
       Login with Naver
     </button>
   );

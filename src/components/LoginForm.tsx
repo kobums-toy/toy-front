@@ -1,12 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React, { useEffect, useState } from 'react';
-import { useAuth, useKakaoAuth, useNaverAuth } from '../hooks/useAuth';
+import { useAuth, useGoogleAuth, useKakaoAuth, useNaverAuth } from '../hooks/useAuth';
 import { primaryColor, primaryColorHover } from '../styles/colors';
 import { Link, useLocation } from 'react-router-dom';
 import Modal from './Modal';
 import KakaoLoginButton from './KakaoLoginButton';
-import NaverLoginButton from './NavweLoginButton';
+import NaverLoginButton from './NaverLoginButton';
+import GoogleLoginButton from './GoogleLoginButton';
 
 const formStyle = css`
   display: flex;
@@ -62,6 +63,7 @@ const LoginForm: React.FC = () => {
   const { mutate: login, isLoading, error } = useAuth();
   const { mutate: kakaoLogin, isLoading: kakaoLoginLoading, error: kakaoLoginError } = useKakaoAuth();
   const { mutate: naverLogin, isLoading: naverLoginLoading, error: naverLoginError } = useNaverAuth();
+  const { mutate: googleLogin, isLoading: googleLoginLoading, error: googleLoginError } = useGoogleAuth();
   const [showErrorModal, setShowErrorModal] = useState(false);
 
   const location = useLocation(); // Get the current location
@@ -70,11 +72,15 @@ const LoginForm: React.FC = () => {
     const params = new URLSearchParams(location.search);
     const code = params.get('code'); // Extract the "code" parameter
     const state = params.get('state');
+    const scope = params.get('scope');
 
     if (code) {
       if (state) {
         console.log('Naver login code:', code);
         naverLogin({ client_id: process.env.REACT_APP_NAVER_CLIENT_ID, redirect_uri: process.env.REACT_APP_NAVER_REDIRECT_URL, client_secret: process.env.REACT_APP_NAVER_CLIENT_SECRET, grant_type: 'authorization_code', code: code, state: state });
+      } else if (scope) {
+        console.log('Google login code:', code);
+        googleLogin({ client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID, client_secret: process.env.REACT_APP_GOOGLE_CLIENT_PASSWORD, redirect_uri: process.env.REACT_APP_GOOGLE_REDIRECT_URL, grant_type: 'authorization_code', code: code });
       } else {
         console.log('Kakao login code:', code);
         kakaoLogin({ client_id: process.env.REACT_APP_KAKAO_JS_KEY, redirect_uri: process.env.REACT_APP_KAKAO_REDIRECT_URL, grant_type: 'authorization_code', code: code });
@@ -120,6 +126,7 @@ const LoginForm: React.FC = () => {
       </form>
       <KakaoLoginButton />
       <NaverLoginButton />
+      <GoogleLoginButton />
       {showErrorModal && (
         <Modal
           type="error"
