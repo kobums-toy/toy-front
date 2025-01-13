@@ -1,6 +1,7 @@
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
+import google from '../models/google';
 import Kakao from '../models/kakao';
 import Login from '../models/login';
 import naver from '../models/naver';
@@ -38,6 +39,14 @@ export const useKakaoAuth = () => {
 
 export const useNaverAuth = () => {
   return useMutation(naver.naverLogin, {
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
+};
+
+export const useGoogleAuth = () => {
+  return useMutation(google.googleLogin, {
     onSuccess: (data) => {
       console.log(data);
     },
