@@ -16,7 +16,7 @@ const formWrapperStyle = css`
   // background-color: white; /* 폼의 배경색 */
   // box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
   // border-radius: 10px; /* 둥근 모서리 */
-  transform: translateY(-50%); /* 요소를 Y축으로 위로 20% 이동 */
+  transform: translateY(-20%); /* 요소를 Y축으로 위로 20% 이동 */
 `;
 
 const LoginPage: React.FC = () => {

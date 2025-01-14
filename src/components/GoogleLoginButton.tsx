@@ -1,13 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import React from 'react';
 import { css } from '@emotion/react';
+import { useRecoilValue } from 'recoil';
+import { themeModeState } from '../recoil/atoms';
 
-const buttonStyle = css`
+const buttonStyle = (darkmode: boolean) => css`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: #fee500; /* Google 노란색 */
-  border: none;
+  background-color: #FFFFFF; /* Google 하얀색 */
+  border: ${darkmode ? 'none' : 'solid 1px'};
   border-radius: 8px;
   padding: 10px 16px;
   cursor: pointer;
@@ -17,16 +19,18 @@ const buttonStyle = css`
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #ffd900;
+    background-color: #FFFFFF;
   }
 
   img {
     margin-right: 8px; /* 로고와 텍스트 간격 */
     height: 24px; /* 로고 크기 */
+    width: 24px;
   }
 `;
 
 const GoogleLoginButton: React.FC = () => {
+  const themeModea = useRecoilValue(themeModeState)
   const doGoogleLogin = () => {
     const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
     const redirectUri = process.env.REACT_APP_GOOGLE_REDIRECT_URL;
@@ -39,8 +43,8 @@ const GoogleLoginButton: React.FC = () => {
   };
 
   return (
-    <button css={buttonStyle} onClick={doGoogleLogin}>
-      <img src="/kakao_login/pngegg.png" alt="Google Logo" />
+    <button css={buttonStyle(themeModea === 'dark')} onClick={doGoogleLogin}>
+      <img src="/google_login/google_logo.png" alt="Google Logo" />
       Login with Google
     </button>
   );
