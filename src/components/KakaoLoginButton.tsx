@@ -23,6 +23,7 @@ const buttonStyle = css`
   img {
     margin-right: 8px; /* 로고와 텍스트 간격 */
     height: 24px; /* 로고 크기 */
+    width: 24px;
   }
 `;
 

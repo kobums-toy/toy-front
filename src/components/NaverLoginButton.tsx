@@ -6,24 +6,31 @@ const buttonStyle = css`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: #fee500; /* Naver 노란색 */
+  background-color: #03C75A; /* Naver 노란색 */
   border: none;
   border-radius: 8px;
   padding: 10px 16px;
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
-  color: #000; /* 검은색 텍스트 */
+  color: #FFF; /* 하얀색 텍스트 */
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #ffd900;
+    background-color: #03C75A;
   }
 
   img {
     margin-right: 8px; /* 로고와 텍스트 간격 */
-    height: 24px; /* 로고 크기 */
+    height: 24px; /* 로고 크기 *
+    width: 24px;
+    object-fit: contain;
+    display: block;
   }
+`;
+
+const imgStyle = css`
+  filter: brightness(0) invert(1); /* 아이콘 색상을 흰색으로 변경 */
 `;
 
 const NaverLoginButton: React.FC = () => {
@@ -40,7 +47,7 @@ const NaverLoginButton: React.FC = () => {
 
   return (
     <button css={buttonStyle} onClick={doNaverLogin}>
-      <img src="/kakao_login/pngegg.png" alt="Naver Logo" />
+      <img src="/naver_login/naver_logo_upscaled_3.png" alt="Naver Logo" css={imgStyle}/>
       Login with Naver
     </button>
   );

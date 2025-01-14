@@ -57,6 +57,14 @@ const signUpLinkStyle = css`
   }
 `;
 
+const socialButtonContainer = css`
+  display: flex;
+  flex-direction: column; /* 세로 정렬 */
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+`;
+
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('honggildong@naver.com');
   const [password, setPassword] = useState('qwer1234!');
@@ -124,9 +132,11 @@ const LoginForm: React.FC = () => {
           Don’t have an account? <Link to="/signup">Sign Up</Link>
         </div>
       </form>
-      <KakaoLoginButton />
-      <NaverLoginButton />
-      <GoogleLoginButton />
+      <div css={socialButtonContainer}>
+        <KakaoLoginButton />
+        <NaverLoginButton />
+        <GoogleLoginButton />
+      </div>
       {showErrorModal && (
         <Modal
           type="error"
