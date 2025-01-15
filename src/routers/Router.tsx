@@ -10,6 +10,7 @@ import BoardDetailPage from '../pages/BoardDetailPage';
 import { BoardPage } from '../pages/BoardPage';
 import BoardInseartPage from '../pages/BoardInseartPage';
 import SignUpPage from '../pages/SignUpPage';
+import WebRTCPage from '../pages/WebRTCPage';
 
 const RouterComponent: React.FC = () => {
   const [authToken, setAuthToken] = useRecoilState(authState); // Recoil에서 토큰 상태 관리
@@ -38,6 +39,7 @@ const RouterComponent: React.FC = () => {
       <Route path="/board" element={<BoardPage />} />
       <Route path="/board/:id" element={<BoardDetailPage />} />
       <Route path="/board/write" element={<BoardInseartPage />} />
+      <Route path="/webrtc" element={<WebRTCPage />} />
       {/* 대시보드 경로 (로그인 후 접근) */}
       {/* <Route path="/dashboard" element={authToken ? <Dashboard /> : <Navigate to="/login" />} /> */}
       {/* 404 페이지 경로 */}
