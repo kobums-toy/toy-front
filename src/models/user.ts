@@ -1,12 +1,12 @@
-import request from '../global/request'
+import request from "../global/request"
 
 export interface UserItem {
-  id: number;
-  email: string;
-  name: string;
-  passwd: string;
-  date: string;
-  extra: object;
+  id: number
+  email: string
+  name: string
+  passwd: string
+  date: string
+  extra: object
 }
 
 export default class User {
@@ -16,7 +16,6 @@ export default class User {
   // static readonly statuss = ['', '사용', '사용안함']
   // static readonly approval = { wait: 1, reject: 2, complete: 3 } as const
   // static readonly approvals = ['', '미승인', ' 거절', '승인']
-
 
   // static getLevel(value: number) {
   //   return this.levels[value]
@@ -30,12 +29,11 @@ export default class User {
   //   return this.approvals[value]
   // }
 
-
   static async insert(item: any) {
     const res = await request({
-      method: 'POST',
-      url: '/api/user',
-      data: item
+      method: "POST",
+      url: "/api/user",
+      data: item,
     })
 
     return res.data
@@ -43,9 +41,9 @@ export default class User {
 
   static async update(item: any) {
     const res = await request({
-      method: 'PUT',
-      url: '/api/user',
-      data: item
+      method: "PUT",
+      url: "/api/user",
+      data: item,
     })
 
     return res.data
@@ -53,9 +51,9 @@ export default class User {
 
   static async remove(item: any) {
     const res = await request({
-      method: 'DELETE',
-      url: '/api/user',
-      data: item
+      method: "DELETE",
+      url: "/api/user",
+      data: item,
     })
 
     return res.data
@@ -63,9 +61,9 @@ export default class User {
 
   static async find(params: any) {
     const res = await request({
-      method: 'GET',
-      url: '/api/user',
-      params: params
+      method: "GET",
+      url: "/api/user",
+      params: params,
     })
 
     if (res.data.items == null) {
@@ -77,9 +75,9 @@ export default class User {
 
   static async count(params: any) {
     const res = await request({
-      method: 'GET',
-      url: '/api/user/count',
-      params: params
+      method: "GET",
+      url: "/api/user/count",
+      params: params,
     })
 
     return res.data
@@ -87,8 +85,8 @@ export default class User {
 
   static async get(id: number) {
     const res = await request({
-      method: 'GET',
-      url: `/api/user/${id}`
+      method: "GET",
+      url: `/api/user/${id}`,
     })
 
     return res.data
@@ -96,8 +94,8 @@ export default class User {
 
   static async me() {
     const res = await request({
-      method: 'GET',
-      url: `/api/me`
+      method: "GET",
+      url: `/api/me`,
     })
 
     return res.data

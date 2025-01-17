@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import { css, useTheme } from '@emotion/react';
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { css, useTheme } from "@emotion/react"
+import React from "react"
+import { useNavigate } from "react-router-dom"
 
 const navStyle = css`
   display: flex;
@@ -12,7 +12,7 @@ const navStyle = css`
   @media (max-width: 768px) {
     display: none; /* 모바일 화면에서는 기본 nav 숨김 */
   }
-`;
+`
 
 const navItemStyle = (theme: any) => css`
   font-size: 1rem;
@@ -26,32 +26,31 @@ const navItemStyle = (theme: any) => css`
   &:hover {
     background-color: ${theme.mode.hoverColor};
   }
-`;
+`
 
 const DesktopNav: React.FC = () => {
-
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleNavigation = (path: string) => {
-    navigate(path);
-  };
+    navigate(path)
+  }
 
   return (
     <nav css={navStyle}>
-      <button css={navItemStyle} onClick={() => handleNavigation('/')}>
+      <button css={navItemStyle} onClick={() => handleNavigation("/")}>
         DashBoard
       </button>
-      <button css={navItemStyle} onClick={() => handleNavigation('/board')}>
+      <button css={navItemStyle} onClick={() => handleNavigation("/board")}>
         Board
       </button>
-      <button css={navItemStyle} onClick={() => handleNavigation('/webrtc')}>
-        webrtc
+      <button css={navItemStyle} onClick={() => handleNavigation("/broadcast")}>
+        broadcast
       </button>
-      <button css={navItemStyle} onClick={() => handleNavigation('/item4')}>
-        item4
+      <button css={navItemStyle} onClick={() => handleNavigation("/Viewer")}>
+        Viewer
       </button>
     </nav>
-  );
-};
+  )
+}
 
-export default DesktopNav;
+export default DesktopNav

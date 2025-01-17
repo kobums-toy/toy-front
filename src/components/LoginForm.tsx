@@ -1,13 +1,18 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
-import React, { useEffect, useState } from 'react';
-import { useAuth, useGoogleAuth, useKakaoAuth, useNaverAuth } from '../hooks/useAuth';
-import { primaryColor, primaryColorHover } from '../styles/colors';
-import { Link, useLocation } from 'react-router-dom';
-import Modal from './Modal';
-import KakaoLoginButton from './KakaoLoginButton';
-import NaverLoginButton from './NaverLoginButton';
-import GoogleLoginButton from './GoogleLoginButton';
+import { css } from "@emotion/react"
+import React, { useEffect, useState } from "react"
+import {
+  useAuth,
+  useGoogleAuth,
+  useKakaoAuth,
+  useNaverAuth,
+} from "../hooks/useAuth"
+import { primaryColor, primaryColorHover } from "../styles/colors"
+import { Link, useLocation } from "react-router-dom"
+import Modal from "./Modal"
+import KakaoLoginButton from "./KakaoLoginButton"
+import NaverLoginButton from "./NaverLoginButton"
+import GoogleLoginButton from "./GoogleLoginButton"
 
 const formStyle = css`
   display: flex;
@@ -18,7 +23,7 @@ const formStyle = css`
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 10px;
-`;
+`
 
 const inputStyle = css`
   margin-bottom: 10px;
@@ -26,7 +31,7 @@ const inputStyle = css`
   font-size: 16px;
   border-radius: 5px;
   border: 1px solid #ccc;
-`;
+`
 
 const buttonStyle = css`
   padding: 10px;
@@ -39,7 +44,7 @@ const buttonStyle = css`
   &:hover {
     background-color: ${primaryColorHover};
   }
-`;
+`
 
 const signUpLinkStyle = css`
   margin-top: 10px;
@@ -55,7 +60,7 @@ const signUpLinkStyle = css`
       text-decoration: underline;
     }
   }
-`;
+`
 
 const socialButtonContainer = css`
   display: flex;
@@ -63,47 +68,80 @@ const socialButtonContainer = css`
   justify-content: center;
   gap: 10px;
   margin-top: 20px;
-`;
+`
 
 const LoginForm: React.FC = () => {
-  const [username, setUsername] = useState('honggildong@naver.com');
-  const [password, setPassword] = useState('qwer1234!');
-  const { mutate: login, isLoading, error } = useAuth();
-  const { mutate: kakaoLogin, isLoading: kakaoLoginLoading, error: kakaoLoginError } = useKakaoAuth();
-  const { mutate: naverLogin, isLoading: naverLoginLoading, error: naverLoginError } = useNaverAuth();
-  const { mutate: googleLogin, isLoading: googleLoginLoading, error: googleLoginError } = useGoogleAuth();
-  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [username, setUsername] = useState("honggildong@naver.com")
+  const [password, setPassword] = useState("qwer1234!")
+  const { mutate: login, isLoading, error } = useAuth()
+  const {
+    mutate: kakaoLogin,
+    isLoading: kakaoLoginLoading,
+    error: kakaoLoginError,
+  } = useKakaoAuth()
+  const {
+    mutate: naverLogin,
+    isLoading: naverLoginLoading,
+    error: naverLoginError,
+  } = useNaverAuth()
+  const {
+    mutate: googleLogin,
+    isLoading: googleLoginLoading,
+    error: googleLoginError,
+  } = useGoogleAuth()
+  const [showErrorModal, setShowErrorModal] = useState(false)
 
-  const location = useLocation(); // Get the current location
+  const location = useLocation() // Get the current location
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const code = params.get('code'); // Extract the "code" parameter
-    const state = params.get('state');
-    const scope = params.get('scope');
+    const params = new URLSearchParams(location.search)
+    const code = params.get("code") // Extract the "code" parameter
+    const state = params.get("state")
+    const scope = params.get("scope")
 
     if (code) {
       if (state) {
-        console.log('Naver login code:', code);
-        naverLogin({ client_id: process.env.REACT_APP_NAVER_CLIENT_ID, redirect_uri: process.env.REACT_APP_NAVER_REDIRECT_URL, client_secret: process.env.REACT_APP_NAVER_CLIENT_SECRET, grant_type: 'authorization_code', code: code, state: state });
+        console.log("Naver login code:", code)
+        naverLogin({
+          client_id: process.env.REACT_APP_NAVER_CLIENT_ID,
+          redirect_uri: process.env.REACT_APP_NAVER_REDIRECT_URL,
+          client_secret: process.env.REACT_APP_NAVER_CLIENT_SECRET,
+          grant_type: "authorization_code",
+          code: code,
+          state: state,
+        })
       } else if (scope) {
-        console.log('Google login code:', code);
-        googleLogin({ client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID, client_secret: process.env.REACT_APP_GOOGLE_CLIENT_PASSWORD, redirect_uri: process.env.REACT_APP_GOOGLE_REDIRECT_URL, grant_type: 'authorization_code', code: code });
+        console.log("Google login code:", code)
+        googleLogin({
+          client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+          client_secret: process.env.REACT_APP_GOOGLE_CLIENT_PASSWORD,
+          redirect_uri: process.env.REACT_APP_GOOGLE_REDIRECT_URL,
+          grant_type: "authorization_code",
+          code: code,
+        })
       } else {
-        console.log('Kakao login code:', code);
-        kakaoLogin({ client_id: process.env.REACT_APP_KAKAO_JS_KEY, redirect_uri: process.env.REACT_APP_KAKAO_REDIRECT_URL, grant_type: 'authorization_code', code: code });
+        console.log("Kakao login code:", code)
+        kakaoLogin({
+          client_id: process.env.REACT_APP_KAKAO_JS_KEY,
+          redirect_uri: process.env.REACT_APP_KAKAO_REDIRECT_URL,
+          grant_type: "authorization_code",
+          code: code,
+        })
       }
     } else {
-      console.error('No code parameter found in the URL');
+      console.error("No code parameter found in the URL")
     }
-  }, [location.search]);
+  }, [location.search])
 
   // onSubmit 이벤트 타입을 명시합니다.
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    login({ email: username, passwd: password }, {
-      onError: () => setShowErrorModal(true),
-    });
+    event.preventDefault()
+    login(
+      { email: username, passwd: password },
+      {
+        onError: () => setShowErrorModal(true),
+      }
+    )
   }
 
   return (
@@ -126,7 +164,7 @@ const LoginForm: React.FC = () => {
           required
         />
         <button css={buttonStyle} type="submit" disabled={isLoading}>
-          {isLoading ? 'Logging in...' : 'Login'}
+          {isLoading ? "Logging in..." : "Login"}
         </button>
         <div css={signUpLinkStyle}>
           Don’t have an account? <Link to="/signup">Sign Up</Link>
@@ -140,12 +178,14 @@ const LoginForm: React.FC = () => {
       {showErrorModal && (
         <Modal
           type="error"
-          message={(error as Error)?.message || 'An error occurred. Please try again.'}
+          message={
+            (error as Error)?.message || "An error occurred. Please try again."
+          }
           onClose={() => setShowErrorModal(false)}
         />
       )}
     </>
-  );
-};
+  )
+}
 
-export default LoginForm;
+export default LoginForm

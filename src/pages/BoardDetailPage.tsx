@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { css, useTheme } from '@emotion/react';
-import { useGetBoard } from '../hooks/useBoard';
-import { BoardItem } from '../models/board';
-import { userInfoState } from '../recoil/atoms';
-import { useRecoilValue } from 'recoil';
+import React, { useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import { css, useTheme } from "@emotion/react"
+import { useGetBoard } from "../hooks/useBoard"
+import { BoardItem } from "../models/board"
+import { userInfoState } from "../recoil/atoms"
+import { useRecoilValue } from "recoil"
 
 const containerStyle = css`
   max-width: 800px;
@@ -14,21 +14,21 @@ const containerStyle = css`
   border: 1px solid #ddd;
   border-radius: 8px;
   // background-color: #fff;
-`;
+`
 
 const headerStyle = css`
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-`;
+`
 
 const titleStyle = (theme: any) => css`
   font-size: 1.8rem;
   font-weight: bold;
   margin-bottom: 10px;
   color: ${theme.mode.text};
-`;
+`
 
 const profileStyle = (theme: any) => css`
   display: flex;
@@ -36,20 +36,20 @@ const profileStyle = (theme: any) => css`
   gap: 10px;
   margin-bottom: 10px;
   color: ${theme.mode.text};
-`;
+`
 
 const profileImageStyle = css`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-`;
+`
 
 const infoStyle = css`
   font-size: 0.9rem;
   color: #777;
   display: flex;
   gap: 10px;
-`;
+`
 
 const tagStyle = css`
   display: inline-block;
@@ -60,7 +60,7 @@ const tagStyle = css`
   font-size: 0.9rem;
   font-weight: bold;
   margin-bottom: 10px;
-`;
+`
 
 const descriptionStyle = (theme: any) => css`
   margin-bottom: 20px;
@@ -76,7 +76,7 @@ const descriptionStyle = (theme: any) => css`
       margin-bottom: 10px;
     }
   }
-`;
+`
 
 const imageContainer = css`
   display: flex;
@@ -87,7 +87,7 @@ const imageContainer = css`
     max-width: 300px;
     border-radius: 10px;
   }
-`;
+`
 
 const footerStyle = css`
   display: flex;
@@ -96,7 +96,7 @@ const footerStyle = css`
   font-size: 0.9rem;
   color: #888;
   margin-top: 20px;
-`;
+`
 
 const buttonStyle = css`
   background-color: #f0f0f0;
@@ -108,33 +108,33 @@ const buttonStyle = css`
   &:hover {
     background-color: #e0e0e0;
   }
-`;
+`
 
 const BoardDetailPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const { data, isLoading, isError } = useGetBoard(id ? +id : 0);
-  const [boardData, setBoardData] = useState<BoardItem>();
-  const userInfo = useRecoilValue(userInfoState); // Retrieve current user's info
-  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>()
+  const { data, isLoading, isError } = useGetBoard(id ? +id : 0)
+  const [boardData, setBoardData] = useState<BoardItem>()
+  const userInfo = useRecoilValue(userInfoState) // Retrieve current user's info
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (data && !isLoading && !isError) {
-      setBoardData(data.item); // Adjusted to match API response
+      setBoardData(data.item) // Adjusted to match API response
     }
-  }, [data, isLoading, isError]);
+  }, [data, isLoading, isError])
 
-  if (!boardData) return <p>Loading...</p>;
+  if (!boardData) return <p>Loading...</p>
 
   const handleEdit = () => {
     // Implement edit functionality here
-    console.log("Edit post", boardData.id);
+    console.log("Edit post", boardData.id)
     navigate("/board/write", { state: { ...boardData } })
-  };
+  }
 
   const handleDelete = () => {
     // Implement delete functionality here
-    console.log("Delete post", boardData.id);
-  };
+    console.log("Delete post", boardData.id)
+  }
 
   return (
     <div css={containerStyle}>
@@ -158,10 +158,10 @@ const BoardDetailPage: React.FC = () => {
           // src={boardData.profileImage || "https://via.placeholder.com/40"}
           // alt={boardData.author}
           src={"https://via.placeholder.com/40"}
-          alt={'aa'}
+          alt={"aa"}
         />
         {/* <span>{boardData.author}</span> */}
-        <span>{'aaaa'}</span>
+        <span>{"aaaa"}</span>
         <span>{new Date(boardData.date).toLocaleDateString()}</span>
       </div>
 
@@ -176,7 +176,10 @@ const BoardDetailPage: React.FC = () => {
 
       {/* Image Section */}
       <div css={imageContainer}>
-        <img src={boardData.img || "https://via.placeholder.com/300"} alt="Content Image" />
+        <img
+          src={boardData.img || "https://via.placeholder.com/300"}
+          alt="Content Image"
+        />
       </div>
 
       {/* Footer Section */}
@@ -186,7 +189,9 @@ const BoardDetailPage: React.FC = () => {
         <button
           css={buttonStyle}
           // onClick={() => navigator.clipboard.writeText(boardData.source || "https://source-link.com")}
-          onClick={() => navigator.clipboard.writeText("https://source-link.com")}
+          onClick={() =>
+            navigator.clipboard.writeText("https://source-link.com")
+          }
         >
           복사
         </button>
@@ -195,12 +200,16 @@ const BoardDetailPage: React.FC = () => {
       {/* Edit and Delete Buttons (Conditionally Rendered) */}
       {boardData.user === userInfo.id && (
         <div css={footerStyle}>
-          <button css={buttonStyle} onClick={handleEdit}>수정</button>
-          <button css={buttonStyle} onClick={handleDelete}>삭제</button>
+          <button css={buttonStyle} onClick={handleEdit}>
+            수정
+          </button>
+          <button css={buttonStyle} onClick={handleDelete}>
+            삭제
+          </button>
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default BoardDetailPage;
+export default BoardDetailPage

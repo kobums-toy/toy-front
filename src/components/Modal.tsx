@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
-import React from 'react';
+import { css } from "@emotion/react"
+import React from "react"
 
 const overlayStyle = css`
   position: fixed;
@@ -13,9 +13,9 @@ const overlayStyle = css`
   justify-content: center;
   align-items: center;
   z-index: 1000;
-`;
+`
 
-const modalStyle = (type: 'error' | 'info') => css`
+const modalStyle = (type: "error" | "info") => css`
   background-color: white;
   padding: 20px;
   border-radius: 10px;
@@ -23,8 +23,8 @@ const modalStyle = (type: 'error' | 'info') => css`
   width: 100%;
   text-align: center;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  color: ${type === 'error' ? 'red' : '#4a90e2'};
-`;
+  color: ${type === "error" ? "red" : "#4a90e2"};
+`
 
 const buttonStyle = css`
   margin-top: 15px;
@@ -39,12 +39,12 @@ const buttonStyle = css`
   &:hover {
     background-color: #357ab8;
   }
-`;
+`
 
 interface ModalProps {
-  type: 'error' | 'info';
-  message: string;
-  onClose: () => void;
+  type: "error" | "info"
+  message: string
+  onClose: () => void
 }
 
 const Modal: React.FC<ModalProps> = ({ type, message, onClose }) => {
@@ -52,10 +52,12 @@ const Modal: React.FC<ModalProps> = ({ type, message, onClose }) => {
     <div css={overlayStyle} onClick={onClose}>
       <div css={modalStyle(type)} onClick={(e) => e.stopPropagation()}>
         <p>{message}</p>
-        <button css={buttonStyle} onClick={onClose}>Close</button>
+        <button css={buttonStyle} onClick={onClose}>
+          Close
+        </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Modal;
+export default Modal

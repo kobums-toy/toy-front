@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
-import React from 'react';
-import { useRecoilValue, useResetRecoilState } from 'recoil';
-import { useNavigate } from 'react-router-dom';
-import { authState, userInfoState } from '../recoil/atoms';
+import { css } from "@emotion/react"
+import React from "react"
+import { useRecoilValue, useResetRecoilState } from "recoil"
+import { useNavigate } from "react-router-dom"
+import { authState, userInfoState } from "../recoil/atoms"
 
 const buttonStyle = css`
   background-color: #1a73e8;
@@ -19,30 +19,33 @@ const buttonStyle = css`
   &:hover {
     background-color: #1766d1;
   }
-`;
+`
 
 const LoginLogoutButton: React.FC = () => {
-  const auth = useRecoilValue(authState);
+  const auth = useRecoilValue(authState)
   const resetAuth = useResetRecoilState(authState)
   const resetUserInfo = useResetRecoilState(userInfoState)
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleLogin = () => {
-    navigate('/login');
-  };
+    navigate("/login")
+  }
 
   const handleLogout = () => {
     resetAuth()
     resetUserInfo()
-    navigate('/login');
-  };
+    navigate("/login")
+  }
 
   return (
-    <button css={buttonStyle} onClick={auth.isAuthenticated ? handleLogout : handleLogin}>
-      {auth.isAuthenticated ? '로그아웃' : '로그인'}
+    <button
+      css={buttonStyle}
+      onClick={auth.isAuthenticated ? handleLogout : handleLogin}
+    >
+      {auth.isAuthenticated ? "로그아웃" : "로그인"}
     </button>
-  );
-};
+  )
+}
 
-export default LoginLogoutButton;
+export default LoginLogoutButton

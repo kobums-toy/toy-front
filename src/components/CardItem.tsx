@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import { css, useTheme } from '@emotion/react';
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { css, useTheme } from "@emotion/react"
+import React from "react"
+import { useNavigate } from "react-router-dom"
 
 // 카드 스타일
 const cardStyle = (theme: any) => css`
@@ -21,13 +21,13 @@ const cardStyle = (theme: any) => css`
   &:hover {
     box-shadow: ${theme.mode.cardBoxShadow};
   }
-`;
+`
 
 // 이미지 스타일
 const imageStyle = css`
   width: 100%;
   border-radius: 10px;
-`;
+`
 
 // 프로필 스타일
 const profileStyle = (theme: any) => css`
@@ -35,7 +35,7 @@ const profileStyle = (theme: any) => css`
   align-items: center;
   margin-top: 10px;
   color: ${theme.mode.text};
-`;
+`
 
 // 프로필 이미지
 const profileImageStyle = css`
@@ -43,7 +43,7 @@ const profileImageStyle = css`
   height: 32px;
   border-radius: 50%;
   margin-right: 10px;
-`;
+`
 
 // 제목 스타일
 const titleStyle = (theme: any) => css`
@@ -51,14 +51,14 @@ const titleStyle = (theme: any) => css`
   font-weight: bold;
   margin-top: 10px;
   color: ${theme.mode.text}; /* 텍스트 색상은 테마에 따라 변경 */
-`;
+`
 
 // 작성자 정보 스타일
 const infoStyle = (theme: any) => css`
   font-size: 0.85rem;
   color: ${theme.mode.text}; /* 텍스트 색상은 테마에 따라 변경 */
   margin-top: 5px;
-`;
+`
 
 // 태그 스타일
 const tagStyle = (theme: any) => css`
@@ -73,26 +73,35 @@ const tagStyle = (theme: any) => css`
   text-overflow: ellipsis; /* 긴 텍스트가 잘리도록 처리 */
   white-space: nowrap; /* 텍스트 줄바꿈 방지 */
   overflow: hidden; /* 텍스트가 길어질 경우 숨김 */
-`;
+`
 
 interface CardItemProps {
-  id: number;
-  title: string;
-  author: string;
-  time: string;
-  views: number;
-  profileImage: string;
-  tag: string;
-  img?: string;
+  id: number
+  title: string
+  author: string
+  time: string
+  views: number
+  profileImage: string
+  tag: string
+  img?: string
 }
 
-const CardItem: React.FC<CardItemProps> = ({ id, title, author, time, views, profileImage, tag, img }) => {
-  ; // 현재 테마 정보를 가져오기
-  const navigate = useNavigate();
+const CardItem: React.FC<CardItemProps> = ({
+  id,
+  title,
+  author,
+  time,
+  views,
+  profileImage,
+  tag,
+  img,
+}) => {
+  // 현재 테마 정보를 가져오기
+  const navigate = useNavigate()
 
   const handleClick = () => {
-    navigate(`/board/${id}`); // 각 카드 아이템의 ID에 따라 상세 페이지로 이동
-  };
+    navigate(`/board/${id}`) // 각 카드 아이템의 ID에 따라 상세 페이지로 이동
+  }
 
   return (
     <div css={cardStyle} onClick={handleClick}>
@@ -109,7 +118,7 @@ const CardItem: React.FC<CardItemProps> = ({ id, title, author, time, views, pro
       </div>
       <div css={tagStyle}>{tag}</div>
     </div>
-  );
-};
+  )
+}
 
-export default CardItem;
+export default CardItem
