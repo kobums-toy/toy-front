@@ -8,7 +8,7 @@ const WebRTCConnection: React.FC = () => {
   const [webSocket, setWebSocket] = useState<WebSocket | null>(null)
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:9000/p2p/ws?peer_id=client1")
+    const ws = new WebSocket("ws://localhost:9000/p2p/webrtc?peer_id=client1")
     ws.onopen = () => console.log("WebSocket 연결 성공")
     ws.onmessage = async (event) => {
       const message = JSON.parse(event.data)

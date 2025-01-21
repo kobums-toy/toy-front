@@ -43,6 +43,9 @@ const DesktopNav: React.FC = () => {
       <button css={navItemStyle} onClick={() => handleNavigation("/board")}>
         Board
       </button>
+      <button css={navItemStyle} onClick={() => handleNavigation("/webrtc")}>
+        webrtc
+      </button>
       <button css={navItemStyle} onClick={() => handleNavigation("/broadcast")}>
         broadcast
       </button>
