@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react"
-import { RecoilRoot, useRecoilValue } from "recoil"
-import { QueryClient, QueryClientProvider } from "react-query"
+import { useRecoilValue } from "recoil"
 import { BrowserRouter as Router } from "react-router-dom"
-import GlobalStyle from "./styles/GlobalStyles"
 import RouterComponent from "./routers/Router" // Router 컴포넌트 가져오기
 import { Layout } from "./components/Layout"
 import Header from "./components/Header"
@@ -11,8 +9,6 @@ import { darkTheme, lightTheme } from "./styles/colors"
 import useMediaQuery from "./hooks/useMediaQeury"
 import FloatingActionButton from "./components/FloatingActionButton"
 import { themeModeState } from "./recoil/atoms"
-
-const queryClient = new QueryClient()
 
 const App: React.FC = () => {
   const themeMode = useRecoilValue(themeModeState)

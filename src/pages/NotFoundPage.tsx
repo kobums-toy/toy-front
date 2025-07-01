@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css, useTheme } from "@emotion/react"
+import { css } from "@emotion/react"
 import React from "react"
 import { Link } from "react-router-dom"
 

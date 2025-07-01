@@ -2,9 +2,8 @@ import React, { useEffect, useRef, useState } from "react"
 
 const Viewer: React.FC = () => {
   const remoteVideoRef = useRef<HTMLVideoElement>(null)
-  const [peerConnection, setPeerConnection] =
-    useState<RTCPeerConnection | null>(null)
-  const [webSocket, setWebSocket] = useState<WebSocket | null>(null)
+  const [, setPeerConnection] = useState<RTCPeerConnection | null>(null)
+  const [, setWebSocket] = useState<WebSocket | null>(null)
   const [connectionState, setConnectionState] = useState<string>("disconnected")
 
   useEffect(() => {

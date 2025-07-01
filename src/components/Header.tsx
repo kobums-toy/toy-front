@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css, useTheme } from "@emotion/react"
+import { css } from "@emotion/react"
 import React, { useState } from "react"
 import { FaBars, FaTimes } from "react-icons/fa"
 import { useNavigate } from "react-router-dom"

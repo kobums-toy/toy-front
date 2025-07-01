@@ -10,7 +10,6 @@ import BoardDetailPage from "../pages/BoardDetailPage"
 import { BoardPage } from "../pages/BoardPage"
 import BoardInseartPage from "../pages/BoardInseartPage"
 import SignUpPage from "../pages/SignUpPage"
-import WebRTCPage from "../pages/WebRTCPage"
 import Broadcast from "../components/Broadcast"
 import Viewer from "../components/Viewer"
 
@@ -40,7 +39,6 @@ const RouterComponent: React.FC = () => {
       <Route path="/board" element={<BoardPage />} />
       <Route path="/board/:id" element={<BoardDetailPage />} />
       <Route path="/board/write" element={<BoardInseartPage />} />
-      <Route path="/webrtc" element={<WebRTCPage />} />
       <Route path="/broadcast" element={<Broadcast />} />
       <Route path="/viewer" element={<Viewer />} />
       {/* 대시보드 경로 (로그인 후 접근) */}

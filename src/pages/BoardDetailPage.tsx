@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { css, useTheme } from "@emotion/react"
+import { css } from "@emotion/react"
 import { useGetBoard } from "../hooks/useBoard"
 import { BoardItem } from "../models/board"
 import { userInfoState } from "../recoil/atoms"
@@ -178,7 +178,7 @@ const BoardDetailPage: React.FC = () => {
       <div css={imageContainer}>
         <img
           src={boardData.img || "https://via.placeholder.com/300"}
-          alt="Content Image"
+          alt="게시글 이미지"
         />
       </div>
 

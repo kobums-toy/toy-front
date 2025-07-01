@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useRef, useState } from "react"
 
 const Broadcast: React.FC = () => {
   const localVideoRef = useRef<HTMLVideoElement>(null)

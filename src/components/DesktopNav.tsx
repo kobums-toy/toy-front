@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css, useTheme } from "@emotion/react"
+import { css } from "@emotion/react"
 import React from "react"
 import { useNavigate } from "react-router-dom"
 
@@ -43,9 +43,9 @@ const DesktopNav: React.FC = () => {
       <button css={navItemStyle} onClick={() => handleNavigation("/board")}>
         Board
       </button>
-      <button css={navItemStyle} onClick={() => handleNavigation("/webrtc")}>
+      {/* <button css={navItemStyle} onClick={() => handleNavigation("/webrtc")}>
         webrtc
-      </button>
+      </button> */}
       <button css={navItemStyle} onClick={() => handleNavigation("/broadcast")}>
         broadcast
       </button>
