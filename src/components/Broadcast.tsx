@@ -10,7 +10,6 @@ export const Broadcast: React.FC = () => {
   const [isStreaming, setIsStreaming] = useState<boolean>(false)
   const [connectionState, setConnectionState] = useState<string>("disconnected")
   const [viewerCount, setViewerCount] = useState<number>(0)
-  const [isManualStop, setIsManualStop] = useState<boolean>(false)
   const [reconnectAttempts, setReconnectAttempts] = useState<number>(0)
   const isManualStopRef = useRef<boolean>(false)
 
@@ -28,7 +27,6 @@ export const Broadcast: React.FC = () => {
   const startBroadcast = async () => {
     try {
       console.log("🚀 방송 시작...", { userId, userName })
-      setIsManualStop(false) // 방송 시작 시 플래그 리셋
       isManualStopRef.current = false // ref도 리셋
 
       const pendingCandidates: RTCIceCandidate[] = []
@@ -217,11 +215,6 @@ export const Broadcast: React.FC = () => {
       }
 
       ws.onclose = (event) => {
-        console.log(
-          `❌ WebSocket 연결 종료: ${event.code}, reason: "${
-            event.reason || "없음"
-          }"`
-        )
         setIsStreaming(false)
         setConnectionState("disconnected")
 
@@ -229,7 +222,10 @@ export const Broadcast: React.FC = () => {
         console.log("🔍 현재 isManualStop 상태:", isManualStopRef.current)
 
         // 사용자가 의도적으로 중지한 경우가 아닐 때만 재연결 시도
-        if (!isManualStopRef.current && reconnectAttempts < maxReconnectAttempts) {
+        if (
+          !isManualStopRef.current &&
+          reconnectAttempts < maxReconnectAttempts
+        ) {
           const newAttempts = reconnectAttempts + 1
           setReconnectAttempts(newAttempts)
           console.log(
@@ -254,9 +250,11 @@ export const Broadcast: React.FC = () => {
 
   const stopBroadcast = () => {
     console.log("⏹️ 방송 중지")
-    setIsManualStop(true) // 사용자가 의도적으로 중지했음을 표시
     isManualStopRef.current = true // ref도 즉시 업데이트
-    console.log("stopBroadcast에서 isManualStopRef.current:", isManualStopRef.current)
+    console.log(
+      "stopBroadcast에서 isManualStopRef.current:",
+      isManualStopRef.current
+    )
     setReconnectAttempts(0) // 재연결 시도 횟수 초기화
 
     // 방송 종료 알림
@@ -297,7 +295,6 @@ export const Broadcast: React.FC = () => {
     return () => {
       if (isStreaming) {
         console.log("⏹️ 방송 중지")
-        setIsManualStop(true)
         isManualStopRef.current = true
         setReconnectAttempts(0)
 
