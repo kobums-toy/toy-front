@@ -49,7 +49,7 @@ const DesktopNav: React.FC = () => {
       <button css={navItemStyle} onClick={() => handleNavigation("/broadcast")}>
         broadcast
       </button>
-      <button css={navItemStyle} onClick={() => handleNavigation("/Viewer")}>
+      <button css={navItemStyle} onClick={() => handleNavigation("/viewer")}>
         Viewer
       </button>
     </nav>

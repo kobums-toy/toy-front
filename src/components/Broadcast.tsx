@@ -1,25 +1,56 @@
-import React, { useRef, useState } from "react"
+import React, { useRef, useState, useEffect } from "react"
+import { useRecoilValue } from "recoil"
+import { userInfoState } from "../recoil/atoms" // 경로는 실제 구조에 맞게 수정
 
-const Broadcast: React.FC = () => {
+export const Broadcast: React.FC = () => {
   const localVideoRef = useRef<HTMLVideoElement>(null)
   const [peerConnection, setPeerConnection] =
     useState<RTCPeerConnection | null>(null)
   const [webSocket, setWebSocket] = useState<WebSocket | null>(null)
   const [isStreaming, setIsStreaming] = useState<boolean>(false)
   const [connectionState, setConnectionState] = useState<string>("disconnected")
+  const [viewerCount, setViewerCount] = useState<number>(0)
+  const [isManualStop, setIsManualStop] = useState<boolean>(false)
+  const [reconnectAttempts, setReconnectAttempts] = useState<number>(0)
+  const isManualStopRef = useRef<boolean>(false)
 
-  let reconnectAttempts = 0
+  // 사용자 인증 정보 가져오기
+  const user = useRecoilValue(userInfoState)
+
+  // 사용자 ID 추출 및 문자열로 변환 보장
+  const userId = String(user?.id || user.id || "unknown")
+  const userName = user.name || `사용자_${userId}`
+
+  console.log("🔍 Broadcast 사용자 정보:", { userId, userName, user })
+
   const maxReconnectAttempts = 5
 
   const startBroadcast = async () => {
     try {
-      console.log("🚀 방송 시작...")
+      console.log("🚀 방송 시작...", { userId, userName })
+      setIsManualStop(false) // 방송 시작 시 플래그 리셋
+      isManualStopRef.current = false // ref도 리셋
 
       const pendingCandidates: RTCIceCandidate[] = []
-      const ws = new WebSocket("ws://localhost:9000/p2p/ws?role=broadcaster")
+      // 사용자 ID를 포함한 WebSocket 연결 (모든 파라미터를 문자열로 인코딩)
+      const ws = new WebSocket(
+        `ws://localhost:9000/p2p/ws?role=broadcaster&user_id=${encodeURIComponent(
+          userId
+        )}&user_name=${encodeURIComponent(userName)}`
+      )
 
       ws.onopen = async () => {
         console.log("✅ 송출자 WebSocket 연결 성공")
+
+        // 방송 시작 알림 전송 (모든 ID를 문자열로 보장)
+        ws.send(
+          JSON.stringify({
+            type: "start_broadcast",
+            broadcaster_id: userId, // 이미 문자열로 변환됨
+            broadcaster_name: userName,
+            timestamp: new Date().toISOString(),
+          })
+        )
 
         const pc = new RTCPeerConnection({
           iceServers: [
@@ -59,14 +90,6 @@ const Broadcast: React.FC = () => {
         })
 
         console.log("🎥 로컬 스트림 획득:", localStream.id)
-        console.log(
-          "📊 스트림 트랙:",
-          localStream.getTracks().map((t) => ({
-            kind: t.kind,
-            enabled: t.enabled,
-            readyState: t.readyState,
-          }))
-        )
 
         // 트랙 추가
         localStream.getTracks().forEach((track) => {
@@ -88,6 +111,7 @@ const Broadcast: React.FC = () => {
                 JSON.stringify({
                   type: "candidate",
                   data: event.candidate,
+                  broadcaster_id: userId, // 문자열로 보장
                 })
               )
             } else {
@@ -115,17 +139,24 @@ const Broadcast: React.FC = () => {
             JSON.stringify({
               type: "offer",
               data: offer.sdp,
+              broadcaster_id: userId, // 문자열로 보장
             })
           )
           console.log("📤 초기 Offer 전송 완료")
         }
 
-        reconnectAttempts = 0
+        setReconnectAttempts(0)
         setIsStreaming(true)
 
         // 대기 중인 ICE candidate 전송
         pendingCandidates.forEach((candidate) => {
-          ws.send(JSON.stringify({ type: "candidate", data: candidate }))
+          ws.send(
+            JSON.stringify({
+              type: "candidate",
+              data: candidate,
+              broadcaster_id: userId, // 문자열로 보장
+            })
+          )
         })
         pendingCandidates.length = 0
 
@@ -136,10 +167,13 @@ const Broadcast: React.FC = () => {
         ws.onmessage = async (event) => {
           try {
             const message = JSON.parse(event.data)
-            console.log("📨 송출자 메시지 수신:", message.type)
+            console.log("📨 송출자 메시지 수신:", message.type, message)
 
             if (message.type === "offer_request") {
-              console.log("🔔 새로운 Offer 요청 수신")
+              console.log(
+                "🔔 새로운 Offer 요청 수신 from viewer:",
+                message.viewer_id
+              )
               const newOffer = await pc.createOffer({
                 offerToReceiveAudio: false,
                 offerToReceiveVideo: false,
@@ -149,13 +183,15 @@ const Broadcast: React.FC = () => {
                 JSON.stringify({
                   type: "offer",
                   data: newOffer.sdp,
+                  broadcaster_id: userId, // 문자열로 보장
+                  viewer_id: String(message.viewer_id), // 문자열로 변환
                 })
               )
               console.log("📤 새 Offer 전송 완료")
             }
 
             if (message.type === "answer") {
-              console.log("🔔 Answer 수신")
+              console.log("🔔 Answer 수신 from viewer:", message.viewer_id)
               await pc.setRemoteDescription({
                 type: "answer",
                 sdp: message.data,
@@ -163,11 +199,16 @@ const Broadcast: React.FC = () => {
               console.log("✅ Remote Description 설정 완료")
             }
 
-            // ICE Candidate 처리 추가
             if (message.type === "candidate") {
               console.log("❄️ ICE Candidate 수신:", message.data.type)
               await pc.addIceCandidate(new RTCIceCandidate(message.data))
               console.log("✅ ICE Candidate 추가 완료")
+            }
+
+            // 시청자 수 업데이트
+            if (message.type === "viewer_count_update") {
+              setViewerCount(message.count)
+              console.log("👥 시청자 수 업데이트:", message.count)
             }
           } catch (error) {
             console.error("❌ 메시지 처리 오류:", error)
@@ -176,18 +217,29 @@ const Broadcast: React.FC = () => {
       }
 
       ws.onclose = (event) => {
-        console.log(`❌ WebSocket 연결 종료: ${event.code}, ${event.reason}`)
+        console.log(
+          `❌ WebSocket 연결 종료: ${event.code}, reason: "${
+            event.reason || "없음"
+          }"`
+        )
         setIsStreaming(false)
         setConnectionState("disconnected")
 
-        if (reconnectAttempts < maxReconnectAttempts) {
-          reconnectAttempts++
+        // 현재 isManualStop 상태를 확인하여 재연결 방지
+        console.log("🔍 현재 isManualStop 상태:", isManualStopRef.current)
+
+        // 사용자가 의도적으로 중지한 경우가 아닐 때만 재연결 시도
+        if (!isManualStopRef.current && reconnectAttempts < maxReconnectAttempts) {
+          const newAttempts = reconnectAttempts + 1
+          setReconnectAttempts(newAttempts)
           console.log(
-            `🔄 재연결 시도 (${reconnectAttempts}/${maxReconnectAttempts})...`
+            `🔄 재연결 시도 (${newAttempts}/${maxReconnectAttempts})...`
           )
           setTimeout(() => {
             startBroadcast()
-          }, 1000 * reconnectAttempts)
+          }, 1000 * newAttempts)
+        } else {
+          console.log("🛑 방송이 완전히 중지되었습니다. 재연결하지 않습니다.")
         }
       }
 
@@ -202,6 +254,28 @@ const Broadcast: React.FC = () => {
 
   const stopBroadcast = () => {
     console.log("⏹️ 방송 중지")
+    setIsManualStop(true) // 사용자가 의도적으로 중지했음을 표시
+    isManualStopRef.current = true // ref도 즉시 업데이트
+    console.log("stopBroadcast에서 isManualStopRef.current:", isManualStopRef.current)
+    setReconnectAttempts(0) // 재연결 시도 횟수 초기화
+
+    // 방송 종료 알림
+    if (webSocket && webSocket.readyState === WebSocket.OPEN) {
+      webSocket.send(
+        JSON.stringify({
+          type: "stop_broadcast",
+          broadcaster_id: userId, // 문자열로 보장
+          timestamp: new Date().toISOString(),
+        })
+      )
+    }
+
+    // 로컬 스트림 먼저 중지
+    if (localVideoRef.current?.srcObject) {
+      const stream = localVideoRef.current.srcObject as MediaStream
+      stream.getTracks().forEach((track) => track.stop())
+      localVideoRef.current.srcObject = null
+    }
 
     if (peerConnection) {
       peerConnection.close()
@@ -209,28 +283,100 @@ const Broadcast: React.FC = () => {
     }
 
     if (webSocket) {
-      webSocket.close()
+      webSocket.close(1000, "Manual stop") // 정상 종료 코드와 이유 명시
       setWebSocket(null)
-    }
-
-    // 로컬 스트림 중지
-    if (localVideoRef.current?.srcObject) {
-      const stream = localVideoRef.current.srcObject as MediaStream
-      stream.getTracks().forEach((track) => track.stop())
-      localVideoRef.current.srcObject = null
     }
 
     setIsStreaming(false)
     setConnectionState("disconnected")
+    setViewerCount(0)
   }
 
+  // 컴포넌트 언마운트 시 방송 정리
+  useEffect(() => {
+    return () => {
+      if (isStreaming) {
+        console.log("⏹️ 방송 중지")
+        setIsManualStop(true)
+        isManualStopRef.current = true
+        setReconnectAttempts(0)
+
+        if (webSocket && webSocket.readyState === WebSocket.OPEN) {
+          webSocket.send(
+            JSON.stringify({
+              type: "stop_broadcast",
+              broadcaster_id: userId,
+              timestamp: new Date().toISOString(),
+            })
+          )
+        }
+
+        if (localVideoRef.current?.srcObject) {
+          const stream = localVideoRef.current.srcObject as MediaStream
+          stream.getTracks().forEach((track) => track.stop())
+          localVideoRef.current.srcObject = null
+        }
+
+        if (peerConnection) {
+          peerConnection.close()
+          setPeerConnection(null)
+        }
+
+        if (webSocket) {
+          webSocket.close(1000, "Manual stop")
+          setWebSocket(null)
+        }
+
+        setIsStreaming(false)
+        setConnectionState("disconnected")
+        setViewerCount(0)
+      }
+    }
+  }, [isStreaming, webSocket, peerConnection, userId])
+
   return (
-    <div>
-      <h2>Broadcast</h2>
-      <div style={{ marginBottom: "10px" }}>
-        <strong>방송 상태:</strong> {isStreaming ? "ON" : "OFF"} |
-        <strong> 연결 상태:</strong> {connectionState}
+    <div style={{ padding: "20px" }}>
+      <h2>🎥 내 방송</h2>
+      <div
+        style={{
+          marginBottom: "20px",
+          padding: "15px",
+          backgroundColor: "#f8f9fa",
+          borderRadius: "8px",
+        }}
+      >
+        <div>
+          <strong>방송자:</strong> {userName} (ID: {userId})
+        </div>
+        <div>
+          <strong>방송 상태:</strong>
+          <span
+            style={{
+              color: isStreaming ? "#28a745" : "#6c757d",
+              fontWeight: "bold",
+              marginLeft: "8px",
+            }}
+          >
+            {isStreaming ? "🔴 LIVE" : "⚫ OFF"}
+          </span>
+        </div>
+        <div>
+          <strong>연결 상태:</strong> {connectionState}
+        </div>
+        <div>
+          <strong>시청자 수:</strong>
+          <span
+            style={{
+              color: "#007bff",
+              fontWeight: "bold",
+              marginLeft: "8px",
+            }}
+          >
+            👥 {viewerCount}명
+          </span>
+        </div>
       </div>
+
       <video
         ref={localVideoRef}
         autoPlay
@@ -239,36 +385,47 @@ const Broadcast: React.FC = () => {
         style={{
           width: "100%",
           backgroundColor: "black",
-          minHeight: "300px",
+          minHeight: "400px",
+          borderRadius: "8px",
+          border: isStreaming ? "3px solid #dc3545" : "1px solid #dee2e6",
         }}
       />
-      <div style={{ marginTop: "10px" }}>
+
+      <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
         <button
           onClick={startBroadcast}
           disabled={isStreaming}
           style={{
-            marginRight: "10px",
-            padding: "10px 20px",
-            backgroundColor: isStreaming ? "#ccc" : "#007bff",
+            padding: "12px 24px",
+            backgroundColor: isStreaming ? "#6c757d" : "#28a745",
             color: "white",
             border: "none",
-            borderRadius: "5px",
+            borderRadius: "6px",
+            fontSize: "16px",
+            fontWeight: "bold",
+            cursor: isStreaming ? "not-allowed" : "pointer",
+            transition: "all 0.2s",
           }}
         >
-          {isStreaming ? "방송 중..." : "방송 시작"}
+          {isStreaming ? "🔴 방송 중..." : "▶️ 방송 시작"}
         </button>
+
         <button
           onClick={stopBroadcast}
           disabled={!isStreaming}
           style={{
-            padding: "10px 20px",
-            backgroundColor: !isStreaming ? "#ccc" : "#dc3545",
+            padding: "12px 24px",
+            backgroundColor: !isStreaming ? "#6c757d" : "#dc3545",
             color: "white",
             border: "none",
-            borderRadius: "5px",
+            borderRadius: "6px",
+            fontSize: "16px",
+            fontWeight: "bold",
+            cursor: !isStreaming ? "not-allowed" : "pointer",
+            transition: "all 0.2s",
           }}
         >
-          방송 중지
+          ⏹️ 방송 중지
         </button>
       </div>
     </div>
