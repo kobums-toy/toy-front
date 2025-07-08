@@ -1,6 +1,89 @@
+/** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react"
 import React, { useRef, useState, useEffect } from "react"
 import { useRecoilValue } from "recoil"
 import { userInfoState } from "../recoil/atoms" // 경로는 실제 구조에 맞게 수정
+
+// 메인 컨테이너 스타일
+const containerStyle = css`
+  padding: 20px;
+`
+
+// 제목 스타일
+const titleStyle = css`
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+`
+
+// 방송 정보 카드 스타일
+const infoCardStyle = css`
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+`
+
+// 방송 정보 행 스타일
+const infoRowStyle = css`
+  margin-bottom: 8px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+`
+
+// 라벨 스타일
+const labelStyle = css`
+  font-weight: bold;
+  margin-right: 8px;
+`
+
+// 방송 상태 스타일
+const statusStyle = (isStreaming: boolean) => css`
+  color: ${isStreaming ? "#28a745" : "#6c757d"};
+  font-weight: bold;
+  margin-left: 8px;
+`
+
+// 시청자 수 스타일
+const viewerCountStyle = css`
+  color: #007bff;
+  font-weight: bold;
+  margin-left: 8px;
+`
+
+// 비디오 스타일
+const videoStyle = (isStreaming: boolean) => css`
+  width: 100%;
+  background-color: black;
+  min-height: 400px;
+  border-radius: 8px;
+  border: ${isStreaming ? "3px solid #dc3545" : "1px solid #dee2e6"};
+`
+
+// 버튼 컨테이너 스타일
+const buttonContainerStyle = css`
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+`
+
+// 버튼 스타일
+const buttonStyle = (disabled: boolean, variant: "primary" | "danger") => css`
+  padding: 12px 24px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: ${disabled ? "not-allowed" : "pointer"};
+  transition: all 0.2s;
+  background-color: ${disabled 
+    ? "#6c757d" 
+    : variant === "primary" 
+      ? "#28a745" 
+      : "#dc3545"};
+`
 
 export const Broadcast: React.FC = () => {
   const localVideoRef = useRef<HTMLVideoElement>(null)
@@ -332,45 +415,24 @@ export const Broadcast: React.FC = () => {
   }, [isStreaming, webSocket, peerConnection, userId])
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>🎥 내 방송</h2>
-      <div
-        style={{
-          marginBottom: "20px",
-          padding: "15px",
-          backgroundColor: "#f8f9fa",
-          borderRadius: "8px",
-        }}
-      >
-        <div>
-          <strong>방송자:</strong> {userName} (ID: {userId})
+    <div css={containerStyle}>
+      <h2 css={titleStyle}>🎥 내 방송</h2>
+      <div css={infoCardStyle}>
+        <div css={infoRowStyle}>
+          <span css={labelStyle}>방송자:</span> {userName} (ID: {userId})
         </div>
-        <div>
-          <strong>방송 상태:</strong>
-          <span
-            style={{
-              color: isStreaming ? "#28a745" : "#6c757d",
-              fontWeight: "bold",
-              marginLeft: "8px",
-            }}
-          >
+        <div css={infoRowStyle}>
+          <span css={labelStyle}>방송 상태:</span>
+          <span css={statusStyle(isStreaming)}>
             {isStreaming ? "🔴 LIVE" : "⚫ OFF"}
           </span>
         </div>
-        <div>
-          <strong>연결 상태:</strong> {connectionState}
+        <div css={infoRowStyle}>
+          <span css={labelStyle}>연결 상태:</span> {connectionState}
         </div>
-        <div>
-          <strong>시청자 수:</strong>
-          <span
-            style={{
-              color: "#007bff",
-              fontWeight: "bold",
-              marginLeft: "8px",
-            }}
-          >
-            👥 {viewerCount}명
-          </span>
+        <div css={infoRowStyle}>
+          <span css={labelStyle}>시청자 수:</span>
+          <span css={viewerCountStyle}>👥 {viewerCount}명</span>
         </div>
       </div>
 
@@ -379,30 +441,14 @@ export const Broadcast: React.FC = () => {
         autoPlay
         muted
         playsInline
-        style={{
-          width: "100%",
-          backgroundColor: "black",
-          minHeight: "400px",
-          borderRadius: "8px",
-          border: isStreaming ? "3px solid #dc3545" : "1px solid #dee2e6",
-        }}
+        css={videoStyle(isStreaming)}
       />
 
-      <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
+      <div css={buttonContainerStyle}>
         <button
           onClick={startBroadcast}
           disabled={isStreaming}
-          style={{
-            padding: "12px 24px",
-            backgroundColor: isStreaming ? "#6c757d" : "#28a745",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            fontSize: "16px",
-            fontWeight: "bold",
-            cursor: isStreaming ? "not-allowed" : "pointer",
-            transition: "all 0.2s",
-          }}
+          css={buttonStyle(isStreaming, "primary")}
         >
           {isStreaming ? "🔴 방송 중..." : "▶️ 방송 시작"}
         </button>
@@ -410,17 +456,7 @@ export const Broadcast: React.FC = () => {
         <button
           onClick={stopBroadcast}
           disabled={!isStreaming}
-          style={{
-            padding: "12px 24px",
-            backgroundColor: !isStreaming ? "#6c757d" : "#dc3545",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            fontSize: "16px",
-            fontWeight: "bold",
-            cursor: !isStreaming ? "not-allowed" : "pointer",
-            transition: "all 0.2s",
-          }}
+          css={buttonStyle(!isStreaming, "danger")}
         >
           ⏹️ 방송 중지
         </button>

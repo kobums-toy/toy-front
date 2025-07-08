@@ -1,7 +1,271 @@
+/** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react"
 import React, { useEffect, useRef, useState } from "react"
 import { useParams, useLocation, useNavigate } from "react-router-dom"
 import { useRecoilValue } from "recoil"
 import { userInfoState } from "../recoil/atoms"
+
+// 메인 컨테이너 스타일
+const containerStyle = css`
+  min-height: 100vh;
+  background-color: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+`
+
+// 상단 헤더 스타일
+const headerStyle = css`
+  background-color: #374151;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`
+
+// 헤더 왼쪽 영역 스타일
+const headerLeftStyle = css`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`
+
+// 헤더 오른쪽 영역 스타일
+const headerRightStyle = css`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`
+
+// 뒤로가기 버튼 스타일
+const backButtonStyle = css`
+  padding: 0.5rem 1rem;
+  background-color: #4b5563;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #6b7280;
+  }
+`
+
+// 방송자 정보 스타일
+const broadcasterInfoStyle = css`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`
+
+// 방송자 이름 스타일
+const broadcasterNameStyle = css`
+  font-size: 1.25rem;
+  font-weight: bold;
+`
+
+// 라이브 표시 스타일
+const liveIndicatorStyle = css`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`
+
+// 라이브 도트 스타일
+const liveDotStyle = css`
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #ef4444;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+`
+
+// 라이브 텍스트 스타일
+const liveTextStyle = css`
+  color: #ef4444;
+  font-weight: 600;
+`
+
+// 시청자 수 스타일
+const viewerCountStyle = css`
+  font-size: 0.875rem;
+  color: #d1d5db;
+`
+
+// 연결 상태 스타일
+const connectionStateStyle = (state: string) => {
+  const colors = {
+    connecting: "#d97706",
+    connected: "#059669",
+    disconnected: "#6b7280",
+    failed: "#dc2626"
+  }
+  return css`
+    font-size: 0.875rem;
+    color: ${colors[state as keyof typeof colors] || "#6b7280"};
+  `
+}
+
+// 방송 정보 바 스타일
+const broadcastInfoBarStyle = css`
+  background-color: #111827;
+  padding: 1rem;
+  border-bottom: 1px solid #374151;
+`
+
+// 방송 정보 내용 스타일
+const broadcastInfoContentStyle = css`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #d1d5db;
+`
+
+// 비디오 영역 스타일
+const videoAreaStyle = css`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+  padding: 1rem;
+`
+
+// 비디오 컨테이너 스타일
+const videoContainerStyle = css`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 72rem;
+  max-height: 80vh;
+  background-color: #111827;
+  border-radius: 0.5rem;
+  overflow: hidden;
+`
+
+// 오버레이 스타일
+const overlayStyle = css`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #111827;
+  z-index: 10;
+`
+
+// 로딩 스피너 스타일
+const spinnerStyle = css`
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid transparent;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`
+
+// 에러 아이콘 스타일
+const errorIconStyle = css`
+  font-size: 3.75rem;
+  color: #ef4444;
+  margin-bottom: 1rem;
+`
+
+// 비디오 스타일
+const videoStyle = (isVisible: boolean) => css`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: ${isVisible ? "block" : "none"};
+`
+
+// 하단 컨트롤 스타일
+const bottomControlStyle = css`
+  background-color: #374151;
+  padding: 1rem;
+`
+
+// 컨트롤 내용 스타일
+const controlContentStyle = css`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`
+
+// 컨트롤 왼쪽 영역 스타일
+const controlLeftStyle = css`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`
+
+// 컨트롤 오른쪽 영역 스타일
+const controlRightStyle = css`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: #d1d5db;
+`
+
+// 컨트롤 버튼 스타일
+const controlButtonStyle = (variant: "primary" | "danger", disabled: boolean) => css`
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: ${disabled ? "not-allowed" : "pointer"};
+  opacity: ${disabled ? 0.5 : 1};
+  transition: background-color 0.2s;
+  background-color: ${variant === "primary" ? "#2563eb" : "#dc2626"};
+  color: white;
+
+  &:hover {
+    background-color: ${!disabled ? (variant === "primary" ? "#1d4ed8" : "#b91c1c") : undefined};
+  }
+`
+
+// 텍스트 센터 스타일
+const textCenterStyle = css`
+  text-align: center;
+`
+
+// 텍스트 화이트 스타일
+const textWhiteStyle = css`
+  color: white;
+`
+
+// 텍스트 그레이 스타일
+const textGrayStyle = css`
+  color: #d1d5db;
+`
+
+// 마진 바텀 스타일
+const mb2Style = css`
+  margin-bottom: 0.5rem;
+`
+
+const mb4Style = css`
+  margin-bottom: 1rem;
+`
+
+// 텍스트 크기 스타일
+const textXlStyle = css`
+  font-size: 1.25rem;
+`
 
 interface BroadcastInfo {
   broadcaster_id: string
@@ -294,6 +558,7 @@ const ViewDetail: React.FC = () => {
         }
         webSocket.send(JSON.stringify(leaveMessage))
         console.log("📤 시청자 떠남 알림 전송")
+        console.log(broadcasterId, viewerId, "시청자 떠남 알림 전송")
       } catch (error) {
         console.error("❌ 시청자 떠남 알림 전송 실패:", error)
       }
@@ -401,52 +666,34 @@ const ViewDetail: React.FC = () => {
     }
   }
 
-  // 연결 상태 색상
-  const getConnectionStateColor = () => {
-    switch (connectionState) {
-      case "connecting":
-        return "text-yellow-600"
-      case "connected":
-        return "text-green-600"
-      case "disconnected":
-        return "text-gray-600"
-      case "failed":
-        return "text-red-600"
-      default:
-        return "text-gray-600"
-    }
-  }
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div css={containerStyle}>
       {/* 상단 헤더 */}
-      <div className="bg-gray-800 p-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={goBack}
-            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
-          >
+      <div css={headerStyle}>
+        <div css={headerLeftStyle}>
+          <button onClick={goBack} css={backButtonStyle}>
             ← 뒤로가기
           </button>
 
           {currentBroadcast && (
-            <div className="flex items-center space-x-4">
-              <h1 className="text-xl font-bold">
+            <div css={broadcasterInfoStyle}>
+              <h1 css={broadcasterNameStyle}>
                 {currentBroadcast.broadcaster_name}
               </h1>
-              <div className="flex items-center space-x-2">
-                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                <span className="text-red-500 font-semibold">LIVE</span>
+              <div css={liveIndicatorStyle}>
+                <span css={liveDotStyle}></span>
+                <span css={liveTextStyle}>LIVE</span>
               </div>
             </div>
           )}
         </div>
 
-        <div className="flex items-center space-x-4">
-          <div className="text-sm text-gray-300">
+        <div css={headerRightStyle}>
+          <div css={viewerCountStyle}>
             시청자 {viewerCount.toLocaleString()}명
           </div>
-          <div className={`text-sm ${getConnectionStateColor()}`}>
+          <div css={connectionStateStyle(connectionState)}>
             {getConnectionStateText()}
           </div>
         </div>
@@ -454,8 +701,8 @@ const ViewDetail: React.FC = () => {
 
       {/* 방송 정보 */}
       {currentBroadcast && (
-        <div className="bg-gray-900 p-4 border-b border-gray-700">
-          <div className="flex items-center justify-between text-sm text-gray-300">
+        <div css={broadcastInfoBarStyle}>
+          <div css={broadcastInfoContentStyle}>
             <div>시작 시간: {formatTime(currentBroadcast.start_time)}</div>
             <div>방송 시간: {formatDuration(currentBroadcast.start_time)}</div>
           </div>
@@ -463,14 +710,14 @@ const ViewDetail: React.FC = () => {
       )}
 
       {/* 비디오 영역 */}
-      <div className="flex-1 flex items-center justify-center bg-black p-4">
-        <div className="relative w-full h-full max-w-6xl max-h-[80vh] bg-gray-900 rounded-lg overflow-hidden">
+      <div css={videoAreaStyle}>
+        <div css={videoContainerStyle}>
           {/* 로딩 표시 */}
           {(isConnecting || isLoadingBroadcast) && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                <p className="text-white">
+            <div css={overlayStyle}>
+              <div css={textCenterStyle}>
+                <div css={spinnerStyle}></div>
+                <p css={textWhiteStyle}>
                   {isLoadingBroadcast
                     ? "방송 정보 불러오는 중..."
                     : "방송에 연결 중..."}
@@ -481,14 +728,14 @@ const ViewDetail: React.FC = () => {
 
           {/* 에러 표시 */}
           {error && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
-              <div className="text-center p-8">
-                <div className="text-red-500 text-6xl mb-4">⚠️</div>
-                <h2 className="text-xl text-white mb-2">연결 오류</h2>
-                <p className="text-gray-300 mb-4">{error}</p>
+            <div css={overlayStyle}>
+              <div css={[textCenterStyle, css`padding: 2rem;`]}>
+                <div css={errorIconStyle}>⚠️</div>
+                <h2 css={[textXlStyle, textWhiteStyle, mb2Style]}>연결 오류</h2>
+                <p css={[textGrayStyle, mb4Style]}>{error}</p>
                 <button
                   onClick={startWatching}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  css={controlButtonStyle("primary", false)}
                 >
                   다시 시도
                 </button>
@@ -502,22 +749,18 @@ const ViewDetail: React.FC = () => {
             autoPlay
             playsInline
             muted
-            className="w-full h-full object-contain"
-            style={{
-              display:
-                isConnecting || error || connectionState !== "connected"
-                  ? "none"
-                  : "block",
-            }}
+            css={videoStyle(
+              !isConnecting && !error && connectionState === "connected"
+            )}
           />
 
           {/* 연결 해제 상태 */}
           {connectionState === "disconnected" && !isConnecting && !error && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-              <div className="text-center">
-                <div className="text-gray-500 text-6xl mb-4">📺</div>
-                <h2 className="text-xl text-white mb-2">방송 연결 대기 중</h2>
-                <p className="text-gray-300">
+            <div css={overlayStyle}>
+              <div css={textCenterStyle}>
+                <div css={css`font-size: 3.75rem; color: #6b7280; margin-bottom: 1rem;`}>📺</div>
+                <h2 css={[textXlStyle, textWhiteStyle, mb2Style]}>방송 연결 대기 중</h2>
+                <p css={textGrayStyle}>
                   방송자의 스트림을 기다리고 있습니다...
                 </p>
               </div>
@@ -527,19 +770,18 @@ const ViewDetail: React.FC = () => {
       </div>
 
       {/* 하단 컨트롤 */}
-      <div className="bg-gray-800 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+      <div css={bottomControlStyle}>
+        <div css={controlContentStyle}>
+          <div css={controlLeftStyle}>
             <button
               onClick={() =>
                 connectionState === "connected" ? stopWatching : startWatching
               }
               disabled={isConnecting}
-              className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
-                connectionState === "connected"
-                  ? "bg-red-600 hover:bg-red-700 text-white"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
-              } ${isConnecting ? "opacity-50 cursor-not-allowed" : ""}`}
+              css={controlButtonStyle(
+                connectionState === "connected" ? "danger" : "primary",
+                isConnecting
+              )}
             >
               {isConnecting
                 ? "연결 중..."
@@ -549,7 +791,7 @@ const ViewDetail: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex items-center space-x-4 text-sm text-gray-300">
+          <div css={controlRightStyle}>
             <div>시청자 ID: {viewerId}</div>
             <div>시청자명: {viewerName}</div>
           </div>

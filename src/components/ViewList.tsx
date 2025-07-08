@@ -1,7 +1,227 @@
+/** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react"
 import React, { useEffect, useState, useCallback } from "react"
 import { useRecoilValue } from "recoil"
 import { useNavigate } from "react-router-dom"
 import { userInfoState } from "../recoil/atoms"
+
+// 메인 컨테이너 스타일
+const containerStyle = css`
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+`
+
+// 헤더 스타일
+const headerStyle = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 20px;
+`
+
+// 헤더 타이틀 영역 스타일
+const headerTitleStyle = css`
+  h1 {
+    margin: 0 0 10px 0;
+    color: #212529;
+  }
+  p {
+    margin: 0;
+    color: #6c757d;
+  }
+`
+
+// 헤더 컨트롤 영역 스타일
+const headerControlsStyle = css`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+`
+
+// 연결 상태 배지 스타일
+const connectionBadgeStyle = (state: string) => {
+  const styles = {
+    connected: { bg: "#d4edda", color: "#155724" },
+    error: { bg: "#f8d7da", color: "#721c24" },
+    default: { bg: "#fff3cd", color: "#856404" }
+  }
+  const style = styles[state as keyof typeof styles] || styles.default
+  
+  return css`
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: ${style.bg};
+    color: ${style.color};
+  `
+}
+
+// 기본 버튼 스타일
+const buttonStyle = (variant: "primary" | "success", disabled: boolean) => css`
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: ${disabled ? "not-allowed" : "pointer"};
+  opacity: ${disabled ? 0.6 : 1};
+  transition: background-color 0.2s;
+  background-color: ${variant === "primary" ? "#007bff" : "#28a745"};
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  &:hover {
+    background-color: ${!disabled ? (variant === "primary" ? "#0056b3" : "#1e7e34") : undefined};
+  }
+`
+
+// 에러 알림 스타일
+const errorAlertStyle = css`
+  padding: 15px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`
+
+// 빈 상태 스타일
+const emptyStateStyle = css`
+  padding: 60px 40px;
+  text-align: center;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+
+  h3 {
+    margin: 0 0 10px 0;
+    color: #495057;
+  }
+  p {
+    margin: 0;
+    color: #6c757d;
+  }
+`
+
+// 방송 목록 그리드 스타일
+const broadcastGridStyle = css`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+`
+
+// 방송 카드 스타일
+const broadcastCardStyle = css`
+  padding: 24px;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    transform: translateY(-4px);
+  }
+`
+
+// 라이브 배지 스타일
+const liveBadgeStyle = css`
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: linear-gradient(45deg, #dc3545, #ff4757);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+`
+
+// 방송자 정보 스타일
+const broadcasterInfoStyle = css`
+  margin-bottom: 16px;
+
+  h3 {
+    margin: 0 0 8px 0;
+    color: #212529;
+    font-size: 18px;
+    font-weight: 600;
+  }
+`
+
+// 방송 시간 정보 스타일
+const timeInfoStyle = css`
+  color: #6c757d;
+  font-size: 14px;
+  margin-bottom: 4px;
+`
+
+// 방송 지속 시간 스타일
+const durationStyle = css`
+  color: #28a745;
+  font-size: 14px;
+  font-weight: 500;
+`
+
+// 통계 정보 스타일
+const statsStyle = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f1f3f4;
+`
+
+// 시청자 수 스타일
+const viewerCountStyle = css`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #007bff;
+  font-size: 16px;
+  font-weight: 500;
+`
+
+// 시청하기 버튼 스타일
+const watchButtonStyle = css`
+  background-color: #007bff;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+`
+
+// 사용자 정보 스타일
+const userInfoStyle = css`
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #6c757d;
+  text-align: center;
+`
+
+// 스피너 스타일
+const spinnerStyle = css`
+  font-size: 48px;
+  margin-bottom: 20px;
+`
 
 interface BroadcastInfo {
   broadcaster_id: string
@@ -289,48 +509,16 @@ const ViewList: React.FC = () => {
   }
 
   return (
-    <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
+    <div css={containerStyle}>
       {/* 헤더 */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "30px",
-          borderBottom: "2px solid #e9ecef",
-          paddingBottom: "20px",
-        }}
-      >
-        <div>
-          <h1 style={{ margin: "0 0 10px 0", color: "#212529" }}>
-            📺 라이브 방송 목록
-          </h1>
-          <p style={{ margin: 0, color: "#6c757d" }}>
-            현재 {broadcastList.length}개의 방송이 진행중입니다
-          </p>
+      <div css={headerStyle}>
+        <div css={headerTitleStyle}>
+          <h1>📺 라이브 방송 목록</h1>
+          <p>현재 {broadcastList.length}개의 방송이 진행중입니다</p>
         </div>
 
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          <div
-            style={{
-              padding: "8px 12px",
-              borderRadius: "20px",
-              fontSize: "14px",
-              fontWeight: "500",
-              backgroundColor:
-                listConnectionState === "connected"
-                  ? "#d4edda"
-                  : listConnectionState === "error"
-                  ? "#f8d7da"
-                  : "#fff3cd",
-              color:
-                listConnectionState === "connected"
-                  ? "#155724"
-                  : listConnectionState === "error"
-                  ? "#721c24"
-                  : "#856404",
-            }}
-          >
+        <div css={headerControlsStyle}>
+          <div css={connectionBadgeStyle(listConnectionState)}>
             {listConnectionState === "connected"
               ? "🟢 연결됨"
               : listConnectionState === "error"
@@ -341,22 +529,7 @@ const ViewList: React.FC = () => {
           <button
             onClick={refreshBroadcastList}
             disabled={listConnectionState === "connecting"}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#007bff",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor:
-                listConnectionState === "connecting"
-                  ? "not-allowed"
-                  : "pointer",
-              opacity: listConnectionState === "connecting" ? 0.6 : 1,
-              fontWeight: "500",
-              display: "flex",
-              alignItems: "center",
-              gap: "5px",
-            }}
+            css={buttonStyle("primary", listConnectionState === "connecting")}
           >
             🔄 새로고침
           </button>
@@ -364,19 +537,7 @@ const ViewList: React.FC = () => {
           <button
             onClick={manualReconnect}
             disabled={listConnectionState === "connecting"}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#28a745",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor:
-                listConnectionState === "connecting"
-                  ? "not-allowed"
-                  : "pointer",
-              opacity: listConnectionState === "connecting" ? 0.6 : 1,
-              fontWeight: "500",
-            }}
+            css={buttonStyle("success", listConnectionState === "connecting")}
           >
             🔗 재연결
           </button>
@@ -385,22 +546,10 @@ const ViewList: React.FC = () => {
 
       {/* 연결 오류 알림 */}
       {connectionError && (
-        <div
-          style={{
-            padding: "15px",
-            backgroundColor: "#f8d7da",
-            color: "#721c24",
-            border: "1px solid #f5c6cb",
-            borderRadius: "8px",
-            marginBottom: "20px",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-          }}
-        >
+        <div css={errorAlertStyle}>
           ❌ <span>{connectionError}</span>
           {reconnectAttempts > 0 && (
-            <span style={{ fontSize: "14px", opacity: 0.8 }}>
+            <span css={css`font-size: 14px; opacity: 0.8;`}>
               (재연결 시도: {reconnectAttempts}/{MAX_RECONNECT_ATTEMPTS})
             </span>
           )}
@@ -409,154 +558,46 @@ const ViewList: React.FC = () => {
 
       {/* 방송 목록 */}
       {broadcastList.length === 0 ? (
-        <div
-          style={{
-            padding: "60px 40px",
-            textAlign: "center",
-            backgroundColor: "#f8f9fa",
-            borderRadius: "12px",
-            border: "2px dashed #dee2e6",
-          }}
-        >
-          <div style={{ fontSize: "48px", marginBottom: "20px" }}>📭</div>
-          <h3 style={{ margin: "0 0 10px 0", color: "#495057" }}>
-            현재 방송 중인 채널이 없습니다
-          </h3>
-          <p style={{ margin: "0", color: "#6c757d" }}>
-            새로운 방송이 시작되면 자동으로 목록에 표시됩니다
-          </p>
+        <div css={emptyStateStyle}>
+          <div css={spinnerStyle}>📭</div>
+          <h3>현재 방송 중인 채널이 없습니다</h3>
+          <p>새로운 방송이 시작되면 자동으로 목록에 표시됩니다</p>
           <button
             onClick={refreshBroadcastList}
-            style={{
-              marginTop: "20px",
-              padding: "10px 20px",
-              backgroundColor: "#007bff",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-            }}
+            css={[buttonStyle("primary", false), css`margin-top: 20px;`]}
           >
             다시 확인하기
           </button>
         </div>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-            gap: "20px",
-          }}
-        >
+        <div css={broadcastGridStyle}>
           {broadcastList.map((broadcast) => (
             <div
               key={broadcast.broadcaster_id}
-              style={{
-                padding: "24px",
-                border: "1px solid #e9ecef",
-                borderRadius: "12px",
-                backgroundColor: "#fff",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                position: "relative",
-                overflow: "hidden",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.15)"
-                e.currentTarget.style.transform = "translateY(-4px)"
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)"
-                e.currentTarget.style.transform = "translateY(0)"
-              }}
+              css={broadcastCardStyle}
               onClick={() => watchBroadcast(broadcast)}
             >
               {/* LIVE 배지 */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: "16px",
-                  right: "16px",
-                  background: "linear-gradient(45deg, #dc3545, #ff4757)",
-                  color: "white",
-                  padding: "4px 12px",
-                  borderRadius: "12px",
-                  fontSize: "12px",
-                  fontWeight: "bold",
-                  boxShadow: "0 2px 4px rgba(220, 53, 69, 0.3)",
-                }}
-              >
-                🔴 LIVE
-              </div>
+              <div css={liveBadgeStyle}>🔴 LIVE</div>
 
               {/* 방송자 정보 */}
-              <div style={{ marginBottom: "16px" }}>
-                <h3
-                  style={{
-                    margin: "0 0 8px 0",
-                    color: "#212529",
-                    fontSize: "18px",
-                    fontWeight: "600",
-                  }}
-                >
-                  🎥 {broadcast.broadcaster_name}
-                </h3>
-                <div
-                  style={{
-                    color: "#6c757d",
-                    fontSize: "14px",
-                    marginBottom: "4px",
-                  }}
-                >
+              <div css={broadcasterInfoStyle}>
+                <h3>🎥 {broadcast.broadcaster_name}</h3>
+                <div css={timeInfoStyle}>
                   시작: {formatTime(broadcast.start_time)}
                 </div>
-                <div
-                  style={{
-                    color: "#28a745",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                  }}
-                >
+                <div css={durationStyle}>
                   {formatDuration(broadcast.start_time)}
                 </div>
               </div>
 
               {/* 통계 정보 */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingTop: "16px",
-                  borderTop: "1px solid #f1f3f4",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    color: "#007bff",
-                    fontSize: "16px",
-                    fontWeight: "500",
-                  }}
-                >
+              <div css={statsStyle}>
+                <div css={viewerCountStyle}>
                   👥 {broadcast.viewer_count}명 시청
                 </div>
 
-                <div
-                  style={{
-                    backgroundColor: "#007bff",
-                    color: "white",
-                    padding: "8px 16px",
-                    borderRadius: "20px",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                  }}
-                >
-                  시청하기 →
-                </div>
+                <div css={watchButtonStyle}>시청하기 →</div>
               </div>
             </div>
           ))}
@@ -564,17 +605,7 @@ const ViewList: React.FC = () => {
       )}
 
       {/* 사용자 정보 (하단) */}
-      <div
-        style={{
-          marginTop: "40px",
-          padding: "20px",
-          backgroundColor: "#f8f9fa",
-          borderRadius: "8px",
-          fontSize: "14px",
-          color: "#6c757d",
-          textAlign: "center",
-        }}
-      >
+      <div css={userInfoStyle}>
         👤 {viewerName} ({viewerId})으로 접속중 • 연결 상태:{" "}
         {listConnectionState} • 총 {broadcastList.length}개 방송 표시중
       </div>
