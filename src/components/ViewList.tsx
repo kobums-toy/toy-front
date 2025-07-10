@@ -2,7 +2,7 @@
 import { css } from "@emotion/react"
 import React, { useEffect, useState, useCallback } from "react"
 import { useRecoilValue } from "recoil"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { userInfoState } from "../recoil/atoms"
 
 // 메인 컨테이너 스타일
@@ -246,6 +246,7 @@ const ViewList: React.FC = () => {
 
   // 라우터
   const navigate = useNavigate()
+  const location = useLocation()
 
   const MAX_RECONNECT_ATTEMPTS = 5
 
@@ -329,7 +330,14 @@ const ViewList: React.FC = () => {
         listWs.onmessage = (event) => {
           try {
             const message = JSON.parse(event.data)
-            console.log("📨 메시지 수신:", message.type)
+            
+            // ViewList 페이지가 아닌 경우 메시지 처리하지 않음
+            if (window.location.pathname !== "/viewer") {
+              console.log("🚫 [ViewList] 다른 페이지에 있어서 메시지 무시:", message.type)
+              return
+            }
+
+            console.log("📨 [ViewList] 메시지 수신:", message.type)
 
             switch (message.type) {
               case "connection_established":
@@ -451,6 +459,41 @@ const ViewList: React.FC = () => {
     }
   }, [viewerId])
 
+  // location 변경 감지 - ViewDetail로 이동할 때 WebSocket 정리
+  useEffect(() => {
+    if (location.pathname !== "/viewer" && listWebSocket) {
+      console.log("🚀 [ViewList] location 변경으로 WebSocket 정리:", location.pathname)
+      listWebSocket.close(1000, "Location changed")
+      setListWebSocket(null)
+      setListConnectionState("disconnected")
+    }
+  }, [location.pathname, listWebSocket])
+
+  // 페이지 포커스 시 재연결 (뒤로가기 등으로 돌아왔을 때)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (location.pathname === "/viewer" && !document.hidden && (!listWebSocket || listWebSocket.readyState !== WebSocket.OPEN)) {
+        console.log("📄 페이지 포커스 - ViewList WebSocket 재연결")
+        connectToWebSocket(false)
+      }
+    }
+
+    const handleFocus = () => {
+      if (location.pathname === "/viewer" && (!listWebSocket || listWebSocket.readyState !== WebSocket.OPEN)) {
+        console.log("🔍 페이지 포커스 - ViewList WebSocket 재연결")
+        connectToWebSocket(false)
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [listWebSocket, connectToWebSocket, location.pathname])
+
   // 수동 재연결
   const manualReconnect = () => {
     setReconnectAttempts(0)
@@ -475,6 +518,14 @@ const ViewList: React.FC = () => {
   // 방송 시청하기 (ViewDetail로 이동)
   const watchBroadcast = (broadcast: BroadcastInfo) => {
     console.log("👀 방송 시청 페이지로 이동:", broadcast.broadcaster_name)
+    
+    // ViewDetail로 이동하기 전에 ViewList의 WebSocket 연결 정리
+    if (listWebSocket && listWebSocket.readyState === WebSocket.OPEN) {
+      console.log("🔌 ViewList WebSocket 연결 정리")
+      listWebSocket.close(1000, "Navigate to detail")
+      setListWebSocket(null)
+    }
+    
     navigate(`/viewer/${broadcast.broadcaster_id}`, {
       state: {
         broadcast,

@@ -81,8 +81,13 @@ const liveDotStyle = css`
   animation: pulse 2s infinite;
 
   @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
   }
 `
 
@@ -104,7 +109,7 @@ const connectionStateStyle = (state: string) => {
     connecting: "#d97706",
     connected: "#059669",
     disconnected: "#6b7280",
-    failed: "#dc2626"
+    failed: "#dc2626",
   }
   return css`
     font-size: 0.875rem;
@@ -161,6 +166,17 @@ const overlayStyle = css`
   z-index: 10;
 `
 
+// 방송 종료 전용 오버레이 스타일 (더 높은 z-index)
+const endedOverlayStyle = css`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 9999;
+`
+
 // 로딩 스피너 스타일
 const spinnerStyle = css`
   width: 3rem;
@@ -172,8 +188,12 @@ const spinnerStyle = css`
   margin: 0 auto 1rem;
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `
 
@@ -222,7 +242,10 @@ const controlRightStyle = css`
 `
 
 // 컨트롤 버튼 스타일
-const controlButtonStyle = (variant: "primary" | "danger", disabled: boolean) => css`
+const controlButtonStyle = (
+  variant: "primary" | "danger",
+  disabled: boolean
+) => css`
   padding: 0.5rem 1.5rem;
   font-weight: 600;
   border-radius: 0.5rem;
@@ -234,7 +257,11 @@ const controlButtonStyle = (variant: "primary" | "danger", disabled: boolean) =>
   color: white;
 
   &:hover {
-    background-color: ${!disabled ? (variant === "primary" ? "#1d4ed8" : "#b91c1c") : undefined};
+    background-color: ${!disabled
+      ? variant === "primary"
+        ? "#1d4ed8"
+        : "#b91c1c"
+      : undefined};
   }
 `
 
@@ -267,6 +294,60 @@ const textXlStyle = css`
   font-size: 1.25rem;
 `
 
+// 방송 종료 화면 스타일
+const broadcastEndedStyle = css`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-align: center;
+  padding: 3rem;
+  border-radius: 1rem;
+  margin: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+`
+
+// 종료 아이콘 스타일
+const endedIconStyle = css`
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.9;
+`
+
+// 종료 메시지 제목 스타일
+const endedTitleStyle = css`
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: white;
+`
+
+// 종료 메시지 설명 스타일
+const endedDescriptionStyle = css`
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  line-height: 1.6;
+`
+
+// 방송 목록으로 돌아가기 버튼 스타일
+const backToListButtonStyle = css`
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.75rem 2rem;
+  border-radius: 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+  }
+`
+
 interface BroadcastInfo {
   broadcaster_id: string
   broadcaster_name: string
@@ -295,6 +376,8 @@ const ViewDetail: React.FC = () => {
     broadcastInfo?.viewer_count || 0
   )
   const [error, setError] = useState<string>("")
+  const [isBroadcastEnded, setIsBroadcastEnded] = useState<boolean>(false)
+  const [forceUpdate, setForceUpdate] = useState<number>(0)
 
   // 사용자 정보
   const user = useRecoilValue(userInfoState)
@@ -376,7 +459,7 @@ const ViewDetail: React.FC = () => {
       ws.onmessage = async (event) => {
         try {
           const message = JSON.parse(event.data)
-          console.log("📨 시청자 메시지 수신:", message.type)
+          console.log("📨 [ViewDetail] 시청자 메시지 수신:", message.type, message)
 
           if (
             message.type === "offer" &&
@@ -496,11 +579,78 @@ const ViewDetail: React.FC = () => {
           }
 
           // 시청자 수 업데이트
+          if (message.type === "viewer_count_update") {
+            const msgBroadcasterId =
+              message.BroadcasterID || message.broadcaster_id
+            const msgCount = message.Count || message.count
+
+            if (String(msgBroadcasterId) === String(broadcasterId)) {
+              setViewerCount(msgCount)
+              console.log("👥 [ViewDetail] 시청자 수 업데이트:", msgCount)
+            }
+          }
+
+          // 방송 종료 처리
           if (
-            message.type === "viewer_count_update" &&
-            message.broadcaster_id === broadcasterId
+            message.type === "broadcast_ended" ||
+            message.type === "stop_broadcast"
           ) {
-            setViewerCount(message.count)
+            const msgBroadcasterId =
+              message.broadcaster_id || message.BroadcasterID
+
+            console.log("🔍 [ViewDetail] 방송 종료 메시지 상세:", {
+              messageType: message.type,
+              msgBroadcasterId,
+              currentBroadcasterId: broadcasterId,
+              match: String(msgBroadcasterId) === String(broadcasterId),
+            })
+
+            if (String(msgBroadcasterId) === String(broadcasterId)) {
+              console.log(
+                "📺 [ViewDetail] 방송이 종료되었습니다 - 상태 업데이트 시작"
+              )
+              console.log(
+                "📺 [ViewDetail] 현재 isBroadcastEnded 상태:",
+                isBroadcastEnded
+              )
+
+              // 함수형 업데이트로 상태를 확실하게 변경
+              setIsBroadcastEnded((prev) => {
+                console.log("📺 [ViewDetail] isBroadcastEnded 업데이트:", prev, "->", true)
+                return true
+              })
+              setConnectionState((prev) => {
+                console.log("📺 [ViewDetail] connectionState 업데이트:", prev, "->", "ended")
+                return "ended"
+              })
+              setIsConnecting((prev) => {
+                console.log("📺 [ViewDetail] isConnecting 업데이트:", prev, "->", false)
+                return false
+              })
+              setError((prev) => {
+                console.log("📺 [ViewDetail] error 업데이트:", prev, "->", "")
+                return ""
+              })
+
+              console.log("📺 [ViewDetail] 상태 업데이트 완료")
+              
+              // 강제 리렌더링 트리거
+              setForceUpdate((prev) => prev + 1)
+
+              // 연결 정리
+              if (pc) {
+                console.log("📺 [ViewDetail] PeerConnection 정리")
+                pc.close()
+                setPeerConnection(null)
+              }
+
+              if (remoteVideoRef.current) {
+                console.log("📺 [ViewDetail] 비디오 스트림 정리")
+                remoteVideoRef.current.srcObject = null
+              }
+            } else {
+              console.log("🚫 [ViewDetail] 방송자 ID가 일치하지 않아 무시됨")
+            }
           }
 
           // 에러 처리
@@ -515,15 +665,26 @@ const ViewDetail: React.FC = () => {
       }
 
       ws.onclose = (event) => {
-        console.log("❌ WebSocket 연결 종료:", event.code)
-        setConnectionState("disconnected")
-
-        if (event.code === 1006) {
-          setError("연결이 비정상적으로 종료되었습니다.")
-        } else if (event.code !== 1000) {
-          setError("서버와의 연결이 끊어졌습니다.")
+        console.log("❌ [ViewDetail] WebSocket 연결 종료:", event.code, event.reason)
+        
+        // 방송자가 방송을 종료한 경우 (정상 종료)
+        if (event.code === 1000 && (event.reason === "Broadcast ended" || event.reason === "Manual stop")) {
+          console.log("📺 [ViewDetail] 방송 종료로 인한 WebSocket 종료")
+          setIsBroadcastEnded(true)
+          setConnectionState("ended")
+          setIsConnecting(false)
+          setError("")
+          setForceUpdate((prev) => prev + 1)
+        } else {
+          setConnectionState("disconnected")
+          
+          if (event.code === 1006) {
+            setError("연결이 비정상적으로 종료되었습니다.")
+          } else if (event.code !== 1000) {
+            setError("서버와의 연결이 끊어졌습니다.")
+          }
+          setIsConnecting(false)
         }
-        setIsConnecting(false)
       }
 
       ws.onerror = (error) => {
@@ -542,7 +703,11 @@ const ViewDetail: React.FC = () => {
 
   // 시청 중지
   const stopWatching = (sendLeaveMessage = true) => {
-    console.log("⏹️ 방송 시청 중지")
+    console.log("⏹️ [ViewDetail] 방송 시청 중지 시작", {
+      sendLeaveMessage,
+      webSocket: !!webSocket,
+      peerConnection: !!peerConnection,
+    })
 
     // 시청자 떠남 알림 전송 (필요한 경우에만)
     if (
@@ -565,22 +730,28 @@ const ViewDetail: React.FC = () => {
     }
 
     if (peerConnection) {
+      console.log("🔌 [ViewDetail] PeerConnection 종료")
       peerConnection.close()
       setPeerConnection(null)
     }
 
     if (webSocket) {
+      console.log("📡 [ViewDetail] WebSocket 종료")
       webSocket.close()
       setWebSocket(null)
     }
 
     if (remoteVideoRef.current) {
+      console.log("📺 [ViewDetail] 비디오 스트림 정리")
       remoteVideoRef.current.srcObject = null
     }
 
+    console.log("🔄 [ViewDetail] 상태 초기화")
     setConnectionState("disconnected")
     setIsConnecting(false)
     setError("")
+
+    console.log("✅ [ViewDetail] 시청 중지 완료")
   }
 
   // 뒤로가기
@@ -626,6 +797,16 @@ const ViewDetail: React.FC = () => {
     }
   }, [webSocket, broadcasterId, viewerId])
 
+  // 방송 종료 상태 변화 추적
+  useEffect(() => {
+    console.log("🔄 [ViewDetail] isBroadcastEnded 상태 변화:", isBroadcastEnded)
+  }, [isBroadcastEnded])
+
+  // 연결 상태 변화 추적
+  useEffect(() => {
+    console.log("🔄 [ViewDetail] connectionState 상태 변화:", connectionState)
+  }, [connectionState])
+
   // 시간 포맷팅
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp)
@@ -666,6 +847,16 @@ const ViewDetail: React.FC = () => {
     }
   }
 
+  // 렌더링 상태 로그
+  console.log("🎨 [ViewDetail] 렌더링 상태:", {
+    isBroadcastEnded,
+    connectionState,
+    isConnecting,
+    error: !!error,
+    currentBroadcast: !!currentBroadcast,
+    forceUpdate,
+    showEndedScreen: isBroadcastEnded || connectionState === "ended",
+  })
 
   return (
     <div css={containerStyle}>
@@ -709,27 +900,65 @@ const ViewDetail: React.FC = () => {
         </div>
       )}
 
+      {/* 방송 종료 화면 - 전체 화면 오버레이 */}
+      {(isBroadcastEnded || connectionState === "ended") && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.95)',
+          zIndex: 999999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <div css={broadcastEndedStyle}>
+            <div css={endedIconStyle}>📺</div>
+            <h2 css={endedTitleStyle}>방송이 종료되었습니다</h2>
+            <p css={endedDescriptionStyle}>
+              {currentBroadcast?.broadcaster_name}님의 라이브 방송이 끝났습니다.<br />
+              시청해 주셔서 감사합니다!
+            </p>
+            <button onClick={goBack} css={backToListButtonStyle}>
+              📋 방송 목록으로 돌아가기
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 비디오 영역 */}
       <div css={videoAreaStyle}>
         <div css={videoContainerStyle}>
+
           {/* 로딩 표시 */}
-          {(isConnecting || isLoadingBroadcast) && (
-            <div css={overlayStyle}>
-              <div css={textCenterStyle}>
-                <div css={spinnerStyle}></div>
-                <p css={textWhiteStyle}>
-                  {isLoadingBroadcast
-                    ? "방송 정보 불러오는 중..."
-                    : "방송에 연결 중..."}
-                </p>
+          {!isBroadcastEnded &&
+            connectionState !== "ended" &&
+            (isConnecting || isLoadingBroadcast) && (
+              <div css={overlayStyle}>
+                <div css={textCenterStyle}>
+                  <div css={spinnerStyle}></div>
+                  <p css={textWhiteStyle}>
+                    {isLoadingBroadcast
+                      ? "방송 정보 불러오는 중..."
+                      : "방송에 연결 중..."}
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* 에러 표시 */}
-          {error && (
+          {!isBroadcastEnded && connectionState !== "ended" && error && (
             <div css={overlayStyle}>
-              <div css={[textCenterStyle, css`padding: 2rem;`]}>
+              <div
+                css={[
+                  textCenterStyle,
+                  css`
+                    padding: 2rem;
+                  `,
+                ]}
+              >
                 <div css={errorIconStyle}>⚠️</div>
                 <h2 css={[textXlStyle, textWhiteStyle, mb2Style]}>연결 오류</h2>
                 <p css={[textGrayStyle, mb4Style]}>{error}</p>
@@ -750,53 +979,82 @@ const ViewDetail: React.FC = () => {
             playsInline
             muted
             css={videoStyle(
-              !isConnecting && !error && connectionState === "connected"
+              !isConnecting &&
+                !error &&
+                !isBroadcastEnded &&
+                connectionState === "connected"
             )}
           />
 
           {/* 연결 해제 상태 */}
-          {connectionState === "disconnected" && !isConnecting && !error && (
-            <div css={overlayStyle}>
-              <div css={textCenterStyle}>
-                <div css={css`font-size: 3.75rem; color: #6b7280; margin-bottom: 1rem;`}>📺</div>
-                <h2 css={[textXlStyle, textWhiteStyle, mb2Style]}>방송 연결 대기 중</h2>
-                <p css={textGrayStyle}>
-                  방송자의 스트림을 기다리고 있습니다...
-                </p>
+          {!isBroadcastEnded &&
+            connectionState === "disconnected" &&
+            !isConnecting &&
+            !error && (
+              <div css={overlayStyle}>
+                <div css={textCenterStyle}>
+                  <div
+                    css={css`
+                      font-size: 3.75rem;
+                      color: #6b7280;
+                      margin-bottom: 1rem;
+                    `}
+                  >
+                    📺
+                  </div>
+                  <h2 css={[textXlStyle, textWhiteStyle, mb2Style]}>
+                    방송 연결 대기 중
+                  </h2>
+                  <p css={textGrayStyle}>
+                    방송자의 스트림을 기다리고 있습니다...
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
 
       {/* 하단 컨트롤 */}
-      <div css={bottomControlStyle}>
-        <div css={controlContentStyle}>
-          <div css={controlLeftStyle}>
-            <button
-              onClick={() =>
-                connectionState === "connected" ? stopWatching : startWatching
-              }
-              disabled={isConnecting}
-              css={controlButtonStyle(
-                connectionState === "connected" ? "danger" : "primary",
-                isConnecting
-              )}
-            >
-              {isConnecting
-                ? "연결 중..."
-                : connectionState === "connected"
-                ? "시청 중지"
-                : "시청 시작"}
-            </button>
-          </div>
+      {!isBroadcastEnded && connectionState !== "ended" && (
+        <div css={bottomControlStyle}>
+          <div css={controlContentStyle}>
+            <div css={controlLeftStyle}>
+              <button
+                onClick={() => {
+                  console.log(
+                    "🔘 [ViewDetail] 버튼 클릭됨. connectionState:",
+                    connectionState
+                  )
+                  if (connectionState === "connected") {
+                    console.log("🛑 [ViewDetail] 시청 중지 함수 호출")
+                    stopWatching()
+                  } else {
+                    console.log("▶️ [ViewDetail] 시청 시작 함수 호출")
+                    startWatching()
+                  }
+                }}
+                disabled={isConnecting}
+                css={controlButtonStyle(
+                  connectionState === "connected" ? "danger" : "primary",
+                  isConnecting
+                )}
+              >
+                {isConnecting
+                  ? "연결 중..."
+                  : connectionState === "connected"
+                  ? "시청 중지"
+                  : "시청 시작"}
+              </button>
+              
+            </div>
 
-          <div css={controlRightStyle}>
-            <div>시청자 ID: {viewerId}</div>
-            <div>시청자명: {viewerName}</div>
+            <div css={controlRightStyle}>
+              <div>시청자 ID: {viewerId}</div>
+              <div>시청자명: {viewerName}</div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
